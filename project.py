@@ -1,13 +1,14 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import requests
 
 st.title("Currency Exchange Rate Calculator") 
 
 st.markdown("<p style='font-size:14px; text-align:center;'>Project of Pauline, Otto, Martin and Simon",unsafe_allow_html=True)
 
 st.sidebar.header("Select a database for the currency exchange")
-database=st.sidebar.selectbox("Select a database: ",("Select here","Manual","CSV-import","Real-time"),key="database")
+database=st.sidebar.selectbox("Select a database: ",("Select here","Manual","CSV-import","Real-time","Historical"),key="database")
 
 if database == "Select here":
     print()
@@ -117,7 +118,117 @@ if database == "CSV-import":
                  chart.line_chart(forchart.set_index(import1.columns[0]))
             else:
                  forthisfirst=0
+if database == "Real-time": 
+    #API 
+    counter=0
+    if counter==0:
+        st.write('''Real-Time Currency data from "FreeCurrencyAPI"''')
 
+        key="fca_live_iak4GkCgv76YYLnU90blnKibVl6sMtKSqMthUmzY"  #key 150times
+        base="https://api.freecurrencyapi.com/v1/latest"
+        #
+        
+        currencys=["EUR","USD","JPY","CNY","GBP"]
+        currency1=st.sidebar.selectbox("Select the base currency to convert: ",(currencys),key="currency1")
+        currency2=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currency2") 
+
+        #IMPORTANT TO UNDERSTAND
+        request_url = request_url = f"{base}?apikey={key}&base_currency={currency1}&currencies={currency2}"
+
+        #IMPORTANT TO UNDERSTAND
+        response = requests.get(request_url,)
+
+
+        if response.status_code == 200: #if code=200, it works well
+
+            data = response.json()
+            exchangerate = data["data"][currency2]
+            st.write(f"the exchange rate is :""{:.2f}".format(exchangerate))
+            amount=st.sidebar.number_input(f"Enter Amount of {currency1} to exchange: ",value=0)
+            if amount !=0:
+                    amountforprint=exchangerate*amount
+                    st.write(f"the exchanged amount in {currency2} is: {"{:.2f}".format(amountforprint)}")
+        else:
+            st.write("Error", response.status_code)
+
+
+
+if database=="Historical":
+    chose1=st.sidebar.selectbox("Select a timeframe or one historical date: ",("Select here","Time-Frame","Time-Point"),key="choseidk")
+    st.write('''Real-Time Currency data from "ForexRateAPI"''')
+    st.write('''Maximum Range is 365 days, no data before 2000''')    
+
+    if chose1=="Select here":
+        print()
+
+    if chose1=="Time-Frame":
+                    
+        key="d6f3714af7452487c54e61a84a08dff4"
+        base=f"https://api.forexrateapi.com/v1/timeframe"
+
+                    
+        currencys=["EUR","USD","JPY","CNY","GBP"]
+        currency1=st.sidebar.selectbox("Select the base currency to convert: ",(currencys),key="currencyone")
+        currency2=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currencytwo") 
+        startdate=st.sidebar.text_input("startdate(YYYY-MM-DD): ",key="startdate") 
+        enddate=st.sidebar.text_input("enddate(YYYY-MM-DD): ",key="enddate") 
+
+                
+
+        if enddate!="":
+            #IMPORTANT TO UNDERSTAND
+            request_url = f"{base}?api_key={key}&start_date={startdate}&end_date={enddate}&base={currency1}&currencies={currency2}"
+
+            #IMPORTANT TO UNDERSTAND
+            response = requests.get(request_url)
+
+
+            if response.status_code == 200: #if code=200, it works well
+
+                data = response.json()
+                st.write("200")
+                            
+                rates=data["rates"]
+                exchangerate = {date: rates[date][currency2] for date in rates}#dictonaryIMPORTANT TO UNDERSTAND
+
+                #st.write("Exchange rate:", exchangerate)
+                st.write("first:", exchangerate[startdate])
+                            
+                forchart = pd.DataFrame(list(exchangerate.items()), columns=["Date", "Exchange Rate"])#IMPORTANT TO UNDERSTAND
+                #st.write(forchart)
+                forchart["Date"] = pd.to_datetime(forchart["Date"], errors='coerce')#fucking annoying because streamlit is dumb
+                chart=st.line_chart(forchart.set_index("Date"))
+                        
+
+
+            else:
+                st.write("Error", response.status_code)
+                
+    
+    if chose1=="Time-Point":
+        
+        date=st.sidebar.text_input("date (YYYY-MM-DD): ",key="date") 
+
+        currencys=["EUR","USD","JPY","CNY","GBP"]
+        currency1=st.sidebar.selectbox("Select the base currency to convert: ",(currencys),key="currencyone1")
+        currency2=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currencytwo2")
+        if date:
+            key="d6f3714af7452487c54e61a84a08dff4"
+            base=f"https://api.forexrateapi.com/v1/{date}"
+        
+            request_url = f"{base}?api_key={key}&base={currency1}&currencies={currency2}"
+            response = requests.get(request_url)
+
+            if response.status_code == 200: #if code=200, it works well
+                
+                data = response.json()
+                #st.write("200")
+
+                exchangerate = data["rates"][currency2]
+                st.write("exchangerate:", "{:.2f}".format(exchangerate))
+
+            else:
+                st.write("Error", response.status_code)
 
 
 
