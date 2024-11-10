@@ -2,233 +2,134 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import requests
-
-st.title("Currency Exchange Rate Calculator") 
-
-st.markdown("<p style='font-size:14px; text-align:center;'>Project of Pauline, Otto, Martin and Simon",unsafe_allow_html=True)
-
-st.sidebar.header("Select a database for the currency exchange")
-database=st.sidebar.selectbox("Select a database: ",("Select here","Manual","CSV-import","Real-time","Historical"),key="database")
-
-if database == "Select here":
-    print()
-if database == "Manual":
-
-    st.write("The exchange rates were set manually as of 20.10.2024\n\n")
-    
-
-    st.sidebar.subheader("Which Excange rate do you like to convert? ")
-
-    currencys=["Euro","Dollar","Pound"]
-    currency1=st.sidebar.selectbox("Select the first Currency: ",(currencys),key="currency1")
-    currency2=st.sidebar.selectbox("Select the Currency to convert to: ",(currencys),key="currency2")
-    
-    amount=st.sidebar.number_input(f"Enter Amount of {currency1} to exchange: ",value=0)
-
-    currency1index= currencys.index(currency1)
-    currency2index= currencys.index(currency2)
-
-    #always euro,dollar,pound
-    exchangerates=[[1,1.08,0.83],[0.93,1,0.77],[1.2,1.3,1]]
-
-    rate=exchangerates[currency1index][currency2index]
-
-    st.write(f"the exchange rate is:  {rate} ")       
-             #so 1 {currency1} is {rate} {currency2}")
-    #st.write(f"1 {currency1} is {rate} {currency2}")
-
-    if amount !=0:
-         st.write(f"{amount} {currency1} are {rate*amount} {currency2} ")
+import getCurrencies
+import altair as alt
 
 
+st.set_page_config(layout="wide", page_title="Exchange Tool")
 
-    #if currency1=="Euro":
-    #   st.write(f"the exchange rate is:  {e[currency2index]}")
-    #if currency1=="Dollar":
-    #    st.write(f"the exchange rate is:  {d[currency2index]}")
-    #if currency1=="Pound":
-    #   st.write(f"the exchange rate is:  {p[currency2index]}")
+# Use st.markdown to allow HTML with unsafe_allow_html=True
 
-if database == "CSV-import": 
+headerContainer = st.container()
 
-    st.sidebar.subheader("Which Excange rate do you like to convert? ")
+with headerContainer:
+    columns = st.columns(2)
+    left = columns[0]
+    right = columns[1]
 
-    currencys=["Euro","Dollar","Pound","JPY","CNY"]
-    currency1=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currency1")
-    #currency2=st.sidebar.selectbox("Select a Currency: ",(currencys),key="currency2")
+    with left:
+        st.markdown("<h1 style='color:indigo;'>Exchange Tool</h1>", unsafe_allow_html=True)
+        st.caption("This tool allows you to convert currencies and display exchange rates over time.")
 
-    currency1index= currencys.index(currency1)
-    #currency2index= currencys.index(currency2)
-
-    import1= st.sidebar.file_uploader(f"Upload a CSV file containing historical {currency1} data", type=["csv"], key="import1")
-    #import2= st.sidebar.file_uploader(f"Upload a CSV file containing historical {currency1} data", type=["csv"])
+    with right:
+        st.image("https://seeklogo.com/images/U/university-college-dublin-logo-3AFABC5D8E-seeklogo.com.png", width=50)
 
 
-    if import1 is not None:
+#Page Layout: 
 
-            import1 = pd.read_csv(import1)
-            
-            #select which currency
-            selection=[]
-            selection = import1.columns[1:].tolist()
-            selectionchoosen=st.sidebar.selectbox("Select exchange: ",(selection),key="selection")
-            
-            #select which date
-            date=[] 
-            date=import1.iloc[:, 0].tolist()
-            datechoosen=st.sidebar.selectbox("Select date: ",(date),key="date")
-            dateindex = date.index(datechoosen)
+# Sets up two columns for the page layout
+columns = st.columns(2)
 
-            #take exchange rate of selected currency/date
-            exchangerate=import1.loc[dateindex,selectionchoosen]
+# Assigns the left and right columns to variables
+leftSide = columns[0]
+rightSide = columns[1]
 
-            st.write(f"the exchange rate is:  {"{:.2f}".format(exchangerate)}")
-            
-            #input of amount to convert
-            amount=st.sidebar.number_input(f"Enter Amount of {currency1} to exchange: ",value=0)
-            
-            #for print in main screen need to split because CSV always CUR1-CUR2
-            forprint=selectionchoosen.split("-")
-            if amount !=0:
-                amountforprint=exchangerate*amount
-                st.write(f"the exchanged amount in {forprint[1]} is: {"{:.2f}".format(amountforprint)}")
+with leftSide:
+    # Create tabs for Currency Converter and Historical Exchange Rates
+    tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currency Table"])
 
-            #creating graph
-            st.write("### Historical Exchange Rates:")
-            chart = st.empty()
-            forthisfirst=0 #needed for checkbox below graph
+    currencyTypes = getCurrencies.getCurrencyTypes().keys()
 
-            if forthisfirst==0:
-                forchart=import1[[import1.columns[0], selectionchoosen]]
-                chart.line_chart(forchart.set_index(import1.columns[0]))
+# Add content for the Currency Overview tab here
+with tabs[0]:
+    st.markdown("<p style='font-weight:bold'>Overview of Currencies</p>", unsafe_allow_html=True)
 
-                checkboxaxis=st.checkbox("Would you like to compare to currencys historically? ")
-
-            #creating overlaying axis 
-            
-            if checkboxaxis == True: 
-                 forthisfirst=1
-                 #select selection 2 of currency
-                 selection2=[]
-                 selection2 = import1.columns[1:].tolist()
-                 selectionchoosen2=st.sidebar.selectbox("Select currency to compare: ",(selection2),key="selection2")
-
-                #updating new chart
-                 forchart=import1[[import1.columns[0], selectionchoosen, selectionchoosen2]]
-                 chart.line_chart(forchart.set_index(import1.columns[0]))
-            else:
-                 forthisfirst=0
-if database == "Real-time": 
-    #API 
-    counter=0
-    if counter==0:
-        st.write('''Real-Time Currency data from "FreeCurrencyAPI"''')
-
-        key="fca_live_iak4GkCgv76YYLnU90blnKibVl6sMtKSqMthUmzY"  #key 150times
-        base="https://api.freecurrencyapi.com/v1/latest"
-        #
+    # Settings Expander    
+    with st.expander("Settings"):
+        selectedCur = st.selectbox("Select Currency", currencyTypes)
         
-        currencys=["EUR","USD","JPY","CNY","GBP"]
-        currency1=st.sidebar.selectbox("Select the base currency to convert: ",(currencys),key="currency1")
-        currency2=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currency2") 
+        # Fetch currency list for selected currency
+        currencyList = getCurrencies.getSpecificCurrency(selectedCur)
+        
+        # Convert the currency list to a sorted list of tuples (currency, value)
+        sorted_currency_data = sorted(currencyList.items(), key=lambda item: item[1])
+        
+        # Extract values to calculate thresholds
+        values = [value for currency, value in sorted_currency_data]
+        min_value = min(values)
+        max_value = max(values)
+        range_value = max_value - min_value
 
-        #IMPORTANT TO UNDERSTAND
-        request_url = request_url = f"{base}?apikey={key}&base_currency={currency1}&currencies={currency2}"
+        # Calculate thresholds based on the range
+        interval = range_value / 8
+        threshold_options = [(round(min_value + i * interval), round(min_value + (i + 1) * interval)) for i in range(8)]
+        
+        # Display calculated thresholds in selectbox
+        threshold = st.selectbox(
+            "Select Threshold",
+            options=threshold_options,
+            index=0,
+            format_func=lambda x: f"{x[0]} - {x[1]}"
+        )
+        sort_order = st.radio("Sort by Value", ("Ascending", "Descending"))
 
-        #IMPORTANT TO UNDERSTAND
-        response = requests.get(request_url,)
+    valueColumn = f"Value of 1 {selectedCur}"
 
+    # Convert sorted list to a DataFrame
+    dataForChart = pd.DataFrame(sorted_currency_data, columns=["Currency", valueColumn])
 
-        if response.status_code == 200: #if code=200, it works well
+    # Filter data based on the selected threshold
+    filteredData = dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]
 
-            data = response.json()
-            exchangerate = data["data"][currency2]
-            st.write(f"the exchange rate is :""{:.2f}".format(exchangerate))
-            amount=st.sidebar.number_input(f"Enter Amount of {currency1} to exchange: ",value=0)
-            if amount !=0:
-                    amountforprint=exchangerate*amount
-                    st.write(f"the exchanged amount in {currency2} is: {"{:.2f}".format(amountforprint)}")
-        else:
-            st.write("Error", response.status_code)
+    # Sort data based on the selected sort order
+    ascending_order = True if sort_order == "Ascending" else False
+    filteredData = filteredData.sort_values(by=valueColumn, ascending=ascending_order)
 
+    # Display the filtered and sorted bar chart
+    chart = alt.Chart(filteredData).mark_bar().encode(
+        x=alt.X("Currency", sort=None),
+        y=valueColumn
+    ).properties(height=400, width=550)
 
+    st.altair_chart(chart)
 
-if database=="Historical":
-    chose1=st.sidebar.selectbox("Select a timeframe or one historical date: ",("Select here","Time-Frame","Time-Point"),key="choseidk")
-    st.write('''Real-Time Currency data from "ForexRateAPI"''')
-    st.write('''Maximum Range is 365 days, no data before 2000''')    
+    # Add content for the Overview tab here
+    with tabs[1]:
+        
 
-    if chose1=="Select here":
-        print()
+        st.markdown("<p style='font-weight:bold'>Currency Converter</p>", unsafe_allow_html=True)
+        # Add content for the Currency Converter tab here
+        
+        selectedCurrencies = st.multiselect("Select Currencies", currencyTypes, default=["USD", "EUR"],)
 
-    if chose1=="Time-Frame":
-                    
-        key="d6f3714af7452487c54e61a84a08dff4"
-        base=f"https://api.forexrateapi.com/v1/timeframe"
+        for cur in selectedCurrencies:
 
-                    
-        currencys=["EUR","USD","JPY","CNY","GBP"]
-        currency1=st.sidebar.selectbox("Select the base currency to convert: ",(currencys),key="currencyone")
-        currency2=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currencytwo") 
-        startdate=st.sidebar.text_input("startdate(YYYY-MM-DD): ",key="startdate") 
-        enddate=st.sidebar.text_input("enddate(YYYY-MM-DD): ",key="enddate") 
+            st.write(f"100 USD = {currencyList[cur]*100} {cur}")
 
-                
+    # Add content for the Currency Table tab here
+    with tabs[2]:
+        st.markdown("<p style='font-weight:bold'>Currency Table</p>", unsafe_allow_html=True)
+        currency_df = pd.DataFrame(list(currencyList.items()), columns=["Currency", "Value of 1 USD"])
+        st.dataframe(currency_df, width=500, height=500)
+        
 
-        if enddate!="":
-            #IMPORTANT TO UNDERSTAND
-            request_url = f"{base}?api_key={key}&start_date={startdate}&end_date={enddate}&base={currency1}&currencies={currency2}"
+# Add any additional content you need on the right side
+with rightSide:
+    tabs = st.tabs(["Grocery Checker", "Buying Power Overview"])
 
-            #IMPORTANT TO UNDERSTAND
-            response = requests.get(request_url)
+    # Add content for the Grocery Checker tab here
+    with tabs[0]:
+        st.markdown("<p style='font-weight:bold'>Grocery Checker</p>", unsafe_allow_html=True)
+        # Add content for the Grocery Checker tab here
 
-
-            if response.status_code == 200: #if code=200, it works well
-
-                data = response.json()
-                st.write("200")
-                            
-                rates=data["rates"]
-                exchangerate = {date: rates[date][currency2] for date in rates}#dictonaryIMPORTANT TO UNDERSTAND
-
-                #st.write("Exchange rate:", exchangerate)
-                st.write("first:", exchangerate[startdate])
-                            
-                forchart = pd.DataFrame(list(exchangerate.items()), columns=["Date", "Exchange Rate"])#IMPORTANT TO UNDERSTAND
-                #st.write(forchart)
-                forchart["Date"] = pd.to_datetime(forchart["Date"], errors='coerce')#fucking annoying because streamlit is dumb
-                chart=st.line_chart(forchart.set_index("Date"))
-                        
-
-
-            else:
-                st.write("Error", response.status_code)
-                
+    # Add content for the Buying Power Overview tab here
+    with tabs[1]:
+        st.markdown("<p style='font-weight:bold'>Buying Power Overview</p>", unsafe_allow_html=True)
+        # Add content for the Buying Power Overview tab here
     
-    if chose1=="Time-Point":
-        
-        date=st.sidebar.text_input("date (YYYY-MM-DD): ",key="date") 
-
-        currencys=["EUR","USD","JPY","CNY","GBP"]
-        currency1=st.sidebar.selectbox("Select the base currency to convert: ",(currencys),key="currencyone1")
-        currency2=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currencytwo2")
-        if date:
-            key="d6f3714af7452487c54e61a84a08dff4"
-            base=f"https://api.forexrateapi.com/v1/{date}"
-        
-            request_url = f"{base}?api_key={key}&base={currency1}&currencies={currency2}"
-            response = requests.get(request_url)
-
-            if response.status_code == 200: #if code=200, it works well
-                
-                data = response.json()
-                #st.write("200")
-
-                exchangerate = data["rates"][currency2]
-                st.write("exchangerate:", "{:.2f}".format(exchangerate))
-
-            else:
-                st.write("Error", response.status_code)
+    
+    # Add content for the right column
 
 
-
+#Splitter for the page layout
+st.empty()
