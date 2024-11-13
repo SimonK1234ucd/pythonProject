@@ -7,6 +7,7 @@ import altair as alt
 import getHistoricalPoint
 import getHistoricalFrame
 import getChartMPW
+import getreadfile
 
 
 st.set_page_config(layout="wide", page_title="Exchange Tool")
@@ -40,7 +41,7 @@ rightSide = columns[1]
 
 with leftSide:
     # Create tabs for Currency Converter and Historical Exchange Rates and so on
-    tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currency Table", "Compare Currencies Historically"])
+    tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Money Purchasing Power"])
 
     currencyTypes = getCurrencies.getCurrencyTypes().keys() #because of keys just the KEYs is global defined
 
@@ -104,22 +105,43 @@ with leftSide:
         currencylist2=getCurrencies.getSpecificCurrency(curr1)
 
         #select here the currency the user like to convert to 
-        curr2= st.multiselect("Select Currencies", currencyTypes, default=[ "EUR","GBP", "JPY"],)
+        curr2= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)
 
         #for loop for every of the currency 2 selected in the new currency list
         for currencies in curr2:
 
-            st.write(f"1 USD = {currencylist2[currencies]} {currencies}") #search for the exchange rate in the currency list for every of the cur 2, and print the name of the cur2 out after
+            st.write(f"1 {curr1} = {currencylist2[currencies]} {currencies}") #search for the exchange rate in the currency list for every of the cur 2, and print the name of the cur2 out after
 
     
 
     with tabs[2]:
-        st.markdown("<p style='font-weight:bold'>Currency Table</p>", unsafe_allow_html=True)
-        curre1=st.selectbox("Select Base currency", currencyTypes, key="tab2")
-        currencylist3=getCurrencies.getSpecificCurrency(curre1)
 
-        currencydf= pd.DataFrame(list(currencylist3.items()), columns=["Currency", f"Value of 1 {curre1}"])
-        st.dataframe(currencydf, width=500, height=500)
+        st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
+        currencylistE=getreadfile.getcurrencylistE()
+        with st.expander("Settings"):
+            curE=st.selectbox("Select Currency to Compare", currencylistE, key="tab2a")
+            date=st.text_input("date (YYYY-MM-DD): ",key="date2a") 
+
+
+
+        chartplot=getreadfile.getcurrencychart(curE)
+        st.write("The Historical Data of the chart")
+        st.line_chart(chartplot)
+
+        if date: 
+            dateexrate=getreadfile.getspecificdatedata(curE,date)
+            st.write(f"The selected Date exchange rate is: {dateexrate} {curE}")
+            st.write(f" 1 EUR is {dateexrate} {curE}")
+
+
+
+        #OLD CODE
+        #st.markdown("<p style='font-weight:bold'>Currency Table</p>", unsafe_allow_html=True)
+        #curre1=st.selectbox("Select Base currency", currencyTypes, key="tab2")
+        #currencylist3=getCurrencies.getSpecificCurrency(curre1)
+
+        #currencydf= pd.DataFrame(list(currencylist3.items()), columns=["Currency", f"Value of 1 {curre1}"])
+        #st.dataframe(currencydf, width=500, height=500)
 
 
 
@@ -127,49 +149,49 @@ with leftSide:
 
         st.markdown("<p style='font-weight:bold'>Compare Currencies Historically</p>", unsafe_allow_html=True)
         exchangeratedate=0
-        check=st.radio("Select: ", ("Click here for historical curriency converter", "Click here for Money Purchasing Power"))
+        
 
 
-
-        if check=="Click here for historical curriency converter":
-            with st.expander("Settings"):
+        #OLD CODE
+       # if check=="Click here for historical curriency converter":
+        #    with st.expander("Settings"):
+         #       
+          #      date=st.text_input("date (YYYY-MM-DD): ",key="date") 
+           #     if date:
+            #        
+             #       cur3=st.selectbox("Select Base currency", currencyTypes, key="tab3")
+              #      cur3b=st.selectbox("Select currency to convert to", currencyTypes, key="tab3b")
+               #     
+                #    exchangeratedate=getHistoricalPoint.getspecificdate(date,cur3,cur3b)
+                 #   #REMOVE THE# TO USE HISTORICAL FRAME !!!MANY REQUESTS!!!
+                  #  chart=getHistoricalFrame.gettimeframe(cur3,cur3b)
                 
-                date = st.date_input("date (YYYY-MM-DD): ")
-                if date:
-                    
-                    cur3=st.selectbox("Select Base currency", currencyTypes, key="tab3")
-                    cur3b=st.selectbox("Select currency to convert to", currencyTypes, key="tab3b")
-                    
-                    exchangeratedate=getHistoricalPoint.getspecificdate(date,cur3,cur3b)
-                    #REMOVE THE# TO USE HISTORICAL FRAME !!!MANY REQUESTS!!!
-                    chart=getHistoricalFrame.gettimeframe(cur3,cur3b)
-                
-            if date and exchangeratedate: # use that chart is not in settings but date is already selected
-                    st.write(f"On {date} :")
-                    st.write(f"1 {cur3} is {exchangeratedate} {cur3b}")
-                    st.write("Last 30-Days:")
-                    #REMOVE THE# TO USE HISTORICAL FRAME !!!MANY REQUESTS!!!
-                    chart=st.line_chart(chart.set_index("Date"))
+          #  if date and exchangeratedate: # use that chart is not in settings but date is already selected
+           #         st.write(f"On {date} :")
+            #        st.write(f"1 {cur3} is {exchangeratedate} {cur3b}")
+             #       st.write("Last 30-Days:")
+              #      #REMOVE THE# TO USE HISTORICAL FRAME !!!MANY REQUESTS!!!
+               #     chart=st.line_chart(chart.set_index("Date"))
 
 
 
-        if check=="Click here for Money Purchasing Power":
-            st.write("work in progress")
+       
+    st.write("!!!!!!!work in progress!!!!!!!!!")
 
-            with st.expander("Settings"):
-                import1=st.file_uploader("Please upload Excel containing Historical Inflation Data")
-                if import1 is not None:
-                    import1 = pd.read_excel(import1)
-                
-                    #select which country
-                    selection=[]
-                    selection = import1.iloc[:,1].tolist()
-                    selectionchoosen3=st.selectbox("Select country: ",(selection),key="country")
+            #with st.expander("Settings"):
+             #   import1=st.file_uploader("Please upload Excel containing Historical Inflation Data")
+              #  if import1 is not None:
+               #     import1 = pd.read_excel(import1)
+                #
+                 #   #select which country
+                  #  selection=[]
+                   # selection = import1.iloc[:,1].tolist()
+                    #selectionchoosen3=st.selectbox("Select country: ",(selection),key="country")
             
-            if import1 is not None and selectionchoosen3: # used that chart is not in settings but filed already uploaded
-                data3=getChartMPW.getchartforMPW(import1, selectionchoosen3)
-                st.write(f"Hisorical Money Purchasing Power of {selectionchoosen3}: ")
-                st.line_chart(data3.set_index("Year"))
+           # if import1 is not None and selectionchoosen3: # used that chart is not in settings but filed already uploaded
+            ##    data3=getChartMPW.getchartforMPW(import1, selectionchoosen3)
+              #  st.write(f"Hisorical Money Purchasing Power of {selectionchoosen3}: ")
+               # st.line_chart(data3.set_index("Year"))
 
        
 

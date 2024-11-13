@@ -28,7 +28,7 @@ def getCurrencyTypes():
     
         print("Checking the currency types")
     
-        url = "https://api.exchangerate-api.com/v4/latest/USD"
+        url = "https://api.exchangerate-api.com/v4/latest/EUR"
         data = FetchDataFromAPI(url)
         currencies = data["rates"]
     
