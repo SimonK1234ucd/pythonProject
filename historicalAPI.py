@@ -22,7 +22,6 @@ if database=="Real-Time":
     startdate=st.sidebar.text_input("startdate(YYYY-MM-DD): ",key="startdate") 
     enddate=st.sidebar.text_input("enddate(YYYY-MM-DD): ",key="enddate") 
 
-  
 
 
     #IMPORTANT TO UNDERSTAND
