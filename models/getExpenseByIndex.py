@@ -5,6 +5,7 @@ import requests
 def getLivingExpenses(year, region=None):
     # Values are indexed relative to New York City (NYC) as the base city
 
+    # Grabed the region codes from the website to use in the URL
     regions = {
         "America" : "019",
         "Europe" : "150",
@@ -13,21 +14,29 @@ def getLivingExpenses(year, region=None):
         "Oceania" : "009",
     }
 
+    # checks if region is provided when calling the function
     if region:
+        # If region is provided, the URL is set to the region code
         url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}&region={regions[region]}"
     else:
+        # If region is not provided, the URL is set to the year
         url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}"    
 
+    # makes GET request to the URL
     response = requests.get(url)
     
+    # Checks if the request was succcsfull
     if response.status_code != 200:
         print("Failed to retrieve data.")
         return
     
+    # Parses the response text with BeautifulSoup
+     # BeautifulSoup is a library that makes it easy to scrape information from web pages
     soup = BeautifulSoup(response.text, "html.parser")
     
     # Locate table with id 't2'
     table = soup.find("table", {"id": "t2"})
+    
     # if the table does not exist, return with print statement
     if not table:
         print("Table not found on the page.")
