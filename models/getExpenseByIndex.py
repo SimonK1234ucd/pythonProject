@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 
-def get_living_expenses(year, region):
+def getLivingExpenses(year, region=None):
     # Values are indexed relative to New York City (NYC) as the base city
 
     regions = {
@@ -48,5 +48,7 @@ def get_living_expenses(year, region):
     dataframe = pd.DataFrame(data, columns=headers)
 
     # Display the DataFrame
-    print(dataframe)
-    
+    print("Returning, DataFrame:", dataframe.count())
+    return dataframe    
+
+getLivingExpenses(2021, "Europe")
