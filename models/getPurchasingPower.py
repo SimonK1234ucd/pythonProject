@@ -16,20 +16,21 @@ def getFuturePP(initial,average,years):
         return forreturn
     
 def getHistoricalPPlist():
-    reader=pd.read_excel("/Users/simonkoos/Desktop/github/pythonProject/files/inflation_data.xlsx")
+    reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/inflation_data.csv")
     countrylist=[]
     countrylist=reader.iloc[:, 0].tolist()
     return countrylist
 
 def getHistorialPPdata(country,year,amount):
-     reader=pd.read_excel("/Users/simonkoos/Desktop/github/pythonProject/files/inflation_data.xlsx")
-     yearindex=reader.columns.get_loc(year)
+     reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/inflation_data.csv")
+     yearindex=reader.columns.get_loc(str(year))
      rowofcounty = reader.loc[reader.iloc[:, 0] == country]
      amount=amount
 
-     for i in range(len(reader.columns),yearindex):
-            amount = amount*1+( (rowofcounty.iloc[0, i]/100))
-     return amount
+     for i in range(len(reader.columns) - 1, yearindex - 1, -1):
+            amount =amount*(1+( (rowofcounty.iloc[0, i]/100)))
+            
+     return "{:.2f}".format(amount)
 
      
 
