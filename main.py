@@ -12,9 +12,7 @@ import models.getHistoricalFrame as getHistoricalFrame
 import models.getChartMPW as getChartMPW
 import models.getreadfile as getreadfile
 
-
 st.set_page_config(layout="wide", page_title="Exchange Tool")
-
 # Use st.markdown to allow HTML with unsafe_allow_html=True
 
 headerContainer = st.container()
@@ -36,8 +34,6 @@ with headerContainer:
 
 # Sets up two columns for the page layout
 columns = st.columns(2)
-
-# Assigns the left and right columns to variables
 leftSide = columns[0]
 rightSide = columns[1]
 

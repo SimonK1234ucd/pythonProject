@@ -31,16 +31,21 @@ def gettimeframe(currency1,currency2):
 
     if response.status_code == 200: #if code=200, it works well
 
+        # Formats the data into json format: e.g. {country_code : "DK", country_name : "Denmark"}
         data = response.json()
         #st.write("200")
         
+        # The data["rates"] grabs the value of the key "rates" from the json data and defines it as a variable called rates (for easy access and reference...)
         rates=data["rates"]
-        exchangerate = {date: rates[date][currency2] for date in rates}#dictonaryIMPORTANT TO UNDERSTAND
 
-        #st.write("Exchange rate:", exchangerate)
-        #st.write("erstes:", exchangerate[startdate])
+        # Within the rates json data (similar to the dictioary structure in python), we want to grab the exchange rate for the specific currency and date
+        exchangerate = {date: rates[date][currency2] for date in rates}
+
         
-        forchart = pd.DataFrame(list(exchangerate.items()), columns=["Date", "Exchange Rate"])#IMPORTANT TO UNDERSTAND
+        #IMPORTANT TO UNDERSTAND
+        forchart = pd.DataFrame(list(exchangerate.items()), columns=["Date", "Exchange Rate"]) # expected output: {date: [exchange rate1, exchange rate2, exchange rate3, ...]}
+            
+
         #st.write(forchart)
         forchart["Date"] = pd.to_datetime(forchart["Date"], errors='coerce')#fucking annoying because streamlit is dumb
         #chart=st.line_chart(forchart.set_index("Date"))
