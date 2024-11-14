@@ -1,7 +1,7 @@
 import pandas as pd
 
 def getcurrencylistE():
-    reader=pd.read_csv("eurohistoricaldata.csv")
+    reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/eurohistoricaldata.csv")
 
     currencylisteuro=[]
     currencylisteuro = reader.columns[1:42].tolist()
@@ -10,7 +10,7 @@ def getcurrencylistE():
 
 def getcurrencychart(cur):
 
-    reader=pd.read_csv("eurohistoricaldata.csv")
+    reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/eurohistoricaldata.csv")
 
     curdata=[]
     curdata=reader.loc[:,cur]
@@ -24,7 +24,7 @@ def getcurrencychart(cur):
     return forchartE
 
 def getspecificdatedata(cur,date):
-     reader=pd.read_csv("eurohistoricaldata.csv")
+     reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/eurohistoricaldata.csv")
      reader.set_index(reader.columns[0], inplace=True) #IMPORTANT to understand
      
      exchangerate=reader.loc[date,cur]

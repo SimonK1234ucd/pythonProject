@@ -152,7 +152,7 @@ with leftSide:
 
         st.markdown("<p style='font-weight:bold'>Compare Currencies Historically</p>", unsafe_allow_html=True)
         exchangeratedate=0
-        
+        st.write("!!!!!!!work in progress!!!!!!!!!")
 
 
         #OLD CODE
@@ -179,7 +179,7 @@ with leftSide:
 
 
        
-    st.write("!!!!!!!work in progress!!!!!!!!!")
+    
 
             #with st.expander("Settings"):
              #   import1=st.file_uploader("Please upload Excel containing Historical Inflation Data")
