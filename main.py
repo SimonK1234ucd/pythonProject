@@ -134,7 +134,7 @@ with leftSide:
         if check=="Click here for historical curriency converter":
             with st.expander("Settings"):
                 
-                date=st.text_input("date (YYYY-MM-DD): ",key="date") 
+                date = st.date_input("date (YYYY-MM-DD): ")
                 if date:
                     
                     cur3=st.selectbox("Select Base currency", currencyTypes, key="tab3")
@@ -142,14 +142,14 @@ with leftSide:
                     
                     exchangeratedate=getHistoricalPoint.getspecificdate(date,cur3,cur3b)
                     #REMOVE THE# TO USE HISTORICAL FRAME !!!MANY REQUESTS!!!
-                    #chart=getHistoricalFrame.gettimeframe(cur3,cur3b)
+                    chart=getHistoricalFrame.gettimeframe(cur3,cur3b)
                 
             if date and exchangeratedate: # use that chart is not in settings but date is already selected
                     st.write(f"On {date} :")
                     st.write(f"1 {cur3} is {exchangeratedate} {cur3b}")
                     st.write("Last 30-Days:")
                     #REMOVE THE# TO USE HISTORICAL FRAME !!!MANY REQUESTS!!!
-                    #chart=st.line_chart(chart.set_index("Date"))
+                    chart=st.line_chart(chart.set_index("Date"))
 
 
 
