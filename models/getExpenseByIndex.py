@@ -2,9 +2,22 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 
-def get_living_expenses(year):
+def get_living_expenses(year, region):
     # Values are indexed relative to New York City (NYC) as the base city
-    url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}"    
+
+    regions = {
+        "America" : "019",
+        "Europe" : "150",
+        "Asia" : "142",
+        "Africa" : "002",
+        "Oceania" : "009",
+    }
+
+    if region:
+        url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}&region={regions[region]}"
+    else:
+        url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}"    
+
     response = requests.get(url)
     
     if response.status_code != 200:
