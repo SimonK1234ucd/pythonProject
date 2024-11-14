@@ -1,13 +1,16 @@
 import pandas as pd
 import requests
 import streamlit as st
+from pathlib import Path
 
 # The purpose of this file is to generate a chart given the parameters: import1 and selectionchoosen
         # import1: the dataframe containing the data e.g. [Year, Country, Value]
         # selectionchoosen: the country selected by the user e.g. "USA"
 
 def getchartforMPW(selectionchoosen):
-        import1 = pd.read_excel("/Users/simonkoos/Desktop/github/pythonProject/files/inflation_data.xlsx")      
+        file_path = Path(__file__).parent.parent / "files" / "inflation_data.xlsx"
+        import1 = pd.read_excel(file_path)
+
         country = import1[import1['Country'] == selectionchoosen]
         valuescountry=country.iloc[:, 2:].values.flatten().tolist()
         moneyvalue=100
