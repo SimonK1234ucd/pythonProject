@@ -2,6 +2,10 @@ import pandas as pd
 import requests
 import streamlit as st
 
+# The purpose of this file is to generate a chart given the parameters: import1 and selectionchoosen
+        # import1: the dataframe containing the data e.g. [Year, Country, Value]
+        # selectionchoosen: the country selected by the user e.g. "USA"
+
 def getchartforMPW(import1,selectionchoosen):
                 
                 #import1 = pd.read_excel(import1)
@@ -25,29 +29,4 @@ def getchartforMPW(import1,selectionchoosen):
                 data3["Year"] = pd.to_datetime(data3["Year"], format='%Y',errors='coerce')
                 
                 return data3
-                        
                 
-
-                #select which date
-                #date=[] 
-                #date=import1.iloc[:, 0].tolist()
-                #datechoosen=st.sidebar.selectbox("Select date: ",(date),key="date")
-                #dateindex = date.index(datechoosen)
-
-                #take exchange rate of selected currency/date
-               # exchangerate=import1.loc[dateindex,selectionchoosen]
-
-        
-                
-               #for print in main screen need to split because CSV always CUR1-CUR2
-             #   forprint=selectionchoosen.split("-")
-              #  if amount !=0:
-               #     amountforprint=exchangerate*amount
-                #    st.write(f"the exchanged amount in {forprint[1]} is: {"{:.2f}".format(amountforprint)}")''
-
-                #creating graph
-              #  st.write("### Historical Exchange Rates:")
-               # chart = st.empty()
-       ##
-        #        forchart=import1[[import1.columns[0], selectionchoosen]]
-         #           chart.line_chart(forchart.set_index(import1.columns[0]))

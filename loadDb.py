@@ -1,3 +1,4 @@
+import streamlit as st
 
 def InitiateDatabase(database):
     if database == "Select here":
