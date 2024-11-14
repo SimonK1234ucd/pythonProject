@@ -50,6 +50,7 @@ with leftSide:
 # Add content for the Currency Overview tab here
     with tabs[0]:
         st.markdown("<p style='font-weight:bold'>Overview of Currencies</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>The Currency Overview displays the value of a selected currency compared to other currencies.</p>", unsafe_allow_html=True)
 
         # Settings Expander    
         with st.expander("Settings"):
@@ -97,6 +98,7 @@ with leftSide:
 
     with tabs[1]:
         st.markdown("<p style='font-weight:bold'>Currency Converter</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>The Currency Converter transforms a selected currency into other specified currencies.</p>", unsafe_allow_html=True)
 
 
         #get the base currency and then create the currenylist for this currency
@@ -116,6 +118,8 @@ with leftSide:
     with tabs[2]:
 
         st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
+
         currencylistE=getreadfile.getcurrencylistE()
         with st.expander("Settings"):
             curE=st.selectbox("Select Currency to Compare", currencylistE, key="tab2a")
@@ -146,12 +150,14 @@ with leftSide:
 
     with tabs[3]:
 
-        st.markdown("<p style='font-weight:bold'>Compare Currencies Historically</p>", unsafe_allow_html=True)
-        exchangeratedate=0
+        st.markdown("<p style='font-weight:bold'>Money Purchasing Power Calculator</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the historical purchasing power of a selected currency.</p>", unsafe_allow_html=True)
+        
         st.write("!!!!!!!work in progress!!!!!!!!!")
 
 
         #OLD CODE
+        # exchangeratedate=0
        # if check=="Click here for historical curriency converter":
         #    with st.expander("Settings"):
          #       
