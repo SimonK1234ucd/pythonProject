@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def getcurrencylistE():
     file_path = os.path.join("files", "eurohistoricaldata.csv")
