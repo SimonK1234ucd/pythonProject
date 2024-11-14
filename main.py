@@ -131,10 +131,13 @@ with leftSide:
         st.write("The Historical Data of the chart")
         st.line_chart(chartplot)
 
+        st.markdown("<p style='font-weight:bold; font-size:22px'>Statistics:</p>", unsafe_allow_html=True)
+
         if date: 
             dateexrate=getreadfile.getspecificdatedata(curE,date)
-            st.write(f"The selected Date exchange rate is: {dateexrate} {curE}")
-            st.write(f" 1 EUR is {dateexrate} {curE}")
+            st.write(f"Date: {date}")
+            st.write(f"Exchange Rate: {dateexrate} {curE}")
+        
 
 
 
