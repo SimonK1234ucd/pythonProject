@@ -6,8 +6,8 @@ import streamlit as st
         # import1: the dataframe containing the data e.g. [Year, Country, Value]
         # selectionchoosen: the country selected by the user e.g. "USA"
 
-def getchartforMPW(import1,selectionchoosen):
-                
+def getchartforMPW(selectionchoosen):
+        import1 = pd.read_excel("/Users/simonkoos/Desktop/github/pythonProject/files/inflation_data.xlsx")      
         country = import1[import1['Country'] == selectionchoosen]
         valuescountry=country.iloc[:, 2:].values.flatten().tolist()
         moneyvalue=100
