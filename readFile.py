@@ -4,7 +4,6 @@ def ReadFile(pathToFile):
 
     file = pd.read_csv(pathToFile)
     file = pd.DataFrame(file)
-
     return file
     
 
