@@ -1,13 +1,16 @@
+
+# The main.py file is the run, that is actuall run in the brower
+# Use streamlit run main.py to start the program.
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import requests
-import getCurrencies
+import models.getCurrencies as getCurrencies
 import altair as alt
-import getHistoricalPoint
-import getHistoricalFrame
-import getChartMPW
-import getreadfile
+import models.getHistoricalPoint as getHistoricalPoint
+import models.getHistoricalFrame as getHistoricalFrame
+import models.getChartMPW as getChartMPW
+import models.getreadfile as getreadfile
 
 
 st.set_page_config(layout="wide", page_title="Exchange Tool")
