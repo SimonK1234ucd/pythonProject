@@ -273,7 +273,7 @@ with leftSide:
                # st.line_chart(data3.set_index("Year"))
 
 with rightSide:
-    tabs = st.tabs(["Exchange Spending Calculator", "Buying Power Overview"])
+    tabs = st.tabs(["Exchange Spending Calculator", "BEER"])
 
     # Add content for the Living expenses tab here
     with tabs[0]:
@@ -282,7 +282,7 @@ with rightSide:
 
     # Add content for the Buying Power Overview tab here
     with tabs[1]:
-        st.markdown("<p style='font-weight:bold'>Buying Power Overview</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-weight:bold'>BEER</p>", unsafe_allow_html=True)
         # Add content for the Buying Power Overview tab here
     
     
