@@ -12,6 +12,9 @@ import models.getHistoricalFrame as getHistoricalFrame
 import models.getChartMPW as getChartMPW
 import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
+from models.getreadfile import getcurrencylistE, getspecificdatedata, getcurrencychart
+from models.getCurrencyRisk import display_currency_risk
+from models.ExchangeSpending import display_spending_comparison
 
 st.set_page_config(layout="wide", page_title="Exchange Tool")
 # Use st.markdown to allow HTML with unsafe_allow_html=True
@@ -121,24 +124,59 @@ with leftSide:
         st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
         st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
+        # Get the list of currencies
         currencylistE=getreadfile.getcurrencylistE()
-        with st.expander("Settings"):
-            curE=st.selectbox("Select Currency to Compare", currencylistE, key="tab2a")
-            date=st.text_input("date (YYYY-MM-DD): ",key="date2a") 
 
+        # Create two columns for side-by-side selection boxes
+        col1, col2 = st.columns(2)
 
+        # Box for selecting currency
+        with col1:
+            curE = st.selectbox("Select Currency to Compare", currencylistE, key = "tab2a")
 
-        chartplot=getreadfile.getcurrencychart(curE)
-        st.write("The Historical Data of the chart")
+        # Dropdown for selecting time period (in the second column)
+        time_periods = ["YTD", "1 year", "2 years", "3 years", "5 years", "10 years", "20 years"]
+        with col2:
+            date = st.selectbox("Select Time Period", time_periods, key = "time_period") 
+        
+        # Set the current date explicitly for testing or real usage
+        current_date = pd.to_datetime("2024-11-13")
+
+        # Determine the start date based on the selected time period
+        periods = {
+            "YTD": current_date.replace(month=1, day=1),
+            "1 year": current_date - pd.DateOffset(years=1),
+            "2 years": current_date - pd.DateOffset(years=2),
+            "3 years": current_date - pd.DateOffset(years=3),
+            "5 years": current_date - pd.DateOffset(years=5),
+            "10 years": current_date - pd.DateOffset(years=10),
+            "20 years": current_date - pd.DateOffset(years=20),
+        }
+        start_date = periods.get(date, current_date)
+
+        
+        # Get the historical chart data for the selected currency
+        chartplot = getcurrencychart(curE)
+
+        # Filter the data based on the selected time period
+        chartplot = chartplot[chartplot.index >= start_date]
+
+        # Display the historical chart
+        st.write(f"Historical Data of {curE} for the Selected Time Period ({date})")
         st.line_chart(chartplot)
 
-        st.markdown("<p style='font-weight:bold; font-size:22px'>Statistics:</p>", unsafe_allow_html=True)
+        # Unused code Simon
+        # Display statistics for a specific date if provided
+        # st.markdown("<p style='font-weight:bold; font-size:22px'>Statistics:</p>", unsafe_allow_html=True)
 
-        if date: 
-            dateexrate=getreadfile.getspecificdatedata(curE,date)
-            st.write(f"Date: {date}")
-            st.write(f"Exchange Rate: {dateexrate} {curE}")
+        # if date: 
+            # dateexrate = getreadfile.getspecificdatedata(curE, date)
+            # st.write(f"Time period: {date}")
+            # st.write(f"Exchange Rate: {dateexrate} {curE}")
         
+        # Display currency risk assessment
+        st.markdown("<p style='font-weight:bold; font-size:22px'>Currency Risk Assessment:</p>", unsafe_allow_html=True)
+        display_currency_risk(curE, start_date)
 
 
 
@@ -235,16 +273,16 @@ with leftSide:
                # st.line_chart(data3.set_index("Year"))
 
 with rightSide:
-    tabs = st.tabs(["Grocery Checker", "Buying Power Overview"])
+    tabs = st.tabs(["Exchange Spending Calculator", "BEER"])
 
-    # Add content for the Grocery Checker tab here
+    # Add content for the Living expenses tab here
     with tabs[0]:
-        st.markdown("<p style='font-weight:bold'>Grocery Checker</p>", unsafe_allow_html=True)
-        # Add content for the Grocery Checker tab here
+        st.markdown("## Exchange Spending Calculator", unsafe_allow_html=True)
+        display_spending_comparison()
 
     # Add content for the Buying Power Overview tab here
     with tabs[1]:
-        st.markdown("<p style='font-weight:bold'>Buying Power Overview</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-weight:bold'>BEER</p>", unsafe_allow_html=True)
         # Add content for the Buying Power Overview tab here
     
     
