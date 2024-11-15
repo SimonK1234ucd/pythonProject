@@ -1,7 +1,9 @@
 import pandas as pd
+from pathlib import Path
 
 def getcurrencylistE():
-    reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/eurohistoricaldata.csv")
+    file_path = Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
+    reader = pd.read_csv(file_path)
 
     currencylisteuro=[]
     currencylisteuro = reader.columns[1:42].tolist()
@@ -10,7 +12,8 @@ def getcurrencylistE():
 
 def getcurrencychart(cur):
 
-    reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/eurohistoricaldata.csv")
+    file_path = Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
+    reader = pd.read_csv(file_path)
 
     curdata=[]
     curdata=reader.loc[:,cur]
@@ -24,12 +27,14 @@ def getcurrencychart(cur):
     return forchartE
 
 def getspecificdatedata(cur,date):
-     reader=pd.read_csv("/Users/simonkoos/Desktop/github/pythonProject/files/eurohistoricaldata.csv")
-     reader.set_index(reader.columns[0], inplace=True) #IMPORTANT to understand
+    file_path = Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
+    reader = pd.read_csv(file_path)
+    
+    reader.set_index(reader.columns[0], inplace=True) #IMPORTANT to understand
      
-     exchangerate=reader.loc[date,cur]
+    exchangerate=reader.loc[date,cur]
 
-     return exchangerate
+    return exchangerate
 
 
 

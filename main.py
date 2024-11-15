@@ -11,6 +11,7 @@ import models.getHistoricalPoint as getHistoricalPoint
 import models.getHistoricalFrame as getHistoricalFrame
 import models.getChartMPW as getChartMPW
 import models.getreadfile as getreadfile
+import models.getPurchasingPower as getPurchasingPower
 
 st.set_page_config(layout="wide", page_title="Exchange Tool")
 # Use st.markdown to allow HTML with unsafe_allow_html=True
@@ -40,7 +41,7 @@ rightSide = columns[1]
 
 with leftSide:
     # Create tabs for Currency Converter and Historical Exchange Rates and so on
-    tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Money Purchasing Power"])
+    tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Purchasing Power Calculator"])
 
     currencyTypes = getCurrencies.getCurrencyTypes().keys() #because of keys just the KEYs is global defined
 
@@ -50,6 +51,7 @@ with leftSide:
 # Add content for the Currency Overview tab here
     with tabs[0]:
         st.markdown("<p style='font-weight:bold'>Overview of Currencies</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>The Currency Overview displays the value of a selected currency compared to other currencies.</p>", unsafe_allow_html=True)
 
         # Settings Expander    
         with st.expander("Settings"):
@@ -97,6 +99,7 @@ with leftSide:
 
     with tabs[1]:
         st.markdown("<p style='font-weight:bold'>Currency Converter</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>The Currency Converter transforms a selected currency into other specified currencies.</p>", unsafe_allow_html=True)
 
 
         #get the base currency and then create the currenylist for this currency
@@ -116,6 +119,8 @@ with leftSide:
     with tabs[2]:
 
         st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
+
         currencylistE=getreadfile.getcurrencylistE()
         with st.expander("Settings"):
             curE=st.selectbox("Select Currency to Compare", currencylistE, key="tab2a")
@@ -127,10 +132,13 @@ with leftSide:
         st.write("The Historical Data of the chart")
         st.line_chart(chartplot)
 
+        st.markdown("<p style='font-weight:bold; font-size:22px'>Statistics:</p>", unsafe_allow_html=True)
+
         if date: 
             dateexrate=getreadfile.getspecificdatedata(curE,date)
-            st.write(f"The selected Date exchange rate is: {dateexrate} {curE}")
-            st.write(f" 1 EUR is {dateexrate} {curE}")
+            st.write(f"Date: {date}")
+            st.write(f"Exchange Rate: {dateexrate} {curE}")
+        
 
 
 
@@ -146,12 +154,46 @@ with leftSide:
 
     with tabs[3]:
 
-        st.markdown("<p style='font-weight:bold'>Compare Currencies Historically</p>", unsafe_allow_html=True)
-        exchangeratedate=0
-        st.write("!!!!!!!work in progress!!!!!!!!!")
+        st.markdown("<p style='font-weight:bold'>Purchasing Power Calculator</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the purchasing power of a selected currency.</p>", unsafe_allow_html=True)
+       
+        check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
+        
+        
+        if check=="Future Purchasing Power":
+            initial=st.number_input("Provide Initial Amount in EUR")
+            average=st.number_input("Provide Average Inflation Rate in %  (max. 20%)")
+            years=st.number_input("Provide Amount of Years  (max. 100)")
+
+            forprint=getPurchasingPower.getFuturePP(initial,average,years)
+            st.write(forprint)
+        
+        if check=="Historical Purchasing Power":
+            with st.expander("Settings"):
+                listcountrys=[]
+                listcountrys=getPurchasingPower.getHistoricalPPlist()
+                country=st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
+                initial=st.number_input("Provide Amount today")
+                years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY)")
+
+            if country:
+                data3=getChartMPW.getchartforMPW(country)
+                st.write(f"Hisorical Money Purchasing Power of {country}: ")
+                st.line_chart(data3.set_index("Year"))
+            
+            if years and initial:
+                data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
+                st.write(f"The Value of {initial} in {years} is {data3b}")
+            
+        
+        
+        
+        
+         
 
 
         #OLD CODE
+        # exchangeratedate=0
        # if check=="Click here for historical curriency converter":
         #    with st.expander("Settings"):
          #       
@@ -191,19 +233,6 @@ with leftSide:
             ##    data3=getChartMPW.getchartforMPW(import1, selectionchoosen3)
               #  st.write(f"Hisorical Money Purchasing Power of {selectionchoosen3}: ")
                # st.line_chart(data3.set_index("Year"))
-
-       
-
-
-             
-
-
-
-
-
-
-
-
 
 with rightSide:
     tabs = st.tabs(["Grocery Checker", "Buying Power Overview"])
