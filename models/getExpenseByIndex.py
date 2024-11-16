@@ -54,8 +54,6 @@ def getLivingExpenses(year, region=None):
     # This loop is set up a bit differently unlike the usualy format:
         # the aciton is declared in the first part of the loop and returns the value
     headers = [cell.text.strip() for cell in headerCellAsList]
-    
-    # Extract rows
 
     #Delcares an empty list to hold data records... :)
     data = []
