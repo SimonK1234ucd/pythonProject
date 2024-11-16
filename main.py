@@ -99,7 +99,7 @@ with leftSide:
         chart = alt.Chart(filteredData).mark_bar().encode(
             x=alt.X("Currency", sort=None),
             y=valueColumn
-        ).properties(height=400, width=650)
+        ).properties(height=500, width =500)
 
         st.altair_chart(chart)
 
