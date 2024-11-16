@@ -1,6 +1,8 @@
 import requests
 import streamlit as st
 
+
+### Note used currently
 basket = []
 
 #Add to basket –––––

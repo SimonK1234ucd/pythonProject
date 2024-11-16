@@ -5,7 +5,7 @@ import requests
 def getLivingExpenses(year, region=None):
     # Values are indexed relative to New York City (NYC) as the base city
 
-    # Grabed the region codes from the website to use in the URL
+    # Grabbed the region codes from the website to use in the URL
     regions = {
         "America" : "019",
         "Europe" : "150",
@@ -50,8 +50,9 @@ def getLivingExpenses(year, region=None):
     # Extract headers
     # Strips each th (cell) of any whitespace and adds it to the list
     headerCellAsList = theader.find_all("th")
-    # This loop is set up a bit differently like the usualy format:
-        # the aciton is declared in the first part of the loop and returns the value in the second part of whichever datatype it is wrapped in
+
+    # This loop is set up a bit differently unlike the usualy format:
+        # the aciton is declared in the first part of the loop and returns the value
     headers = [cell.text.strip() for cell in headerCellAsList]
     
     # Extract rows
@@ -75,4 +76,4 @@ def getLivingExpenses(year, region=None):
     # Retunrs the actual dataframe in standard format
     return dataframe    
 
-getLivingExpenses(2021, "Europe")
+getLivingExpenses(2024)
