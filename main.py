@@ -277,7 +277,8 @@ with rightSide:
 
     # Add content for the Living expenses tab here
     with tabs[0]:
-        st.markdown("## Exchange Spending Calculator", unsafe_allow_html=True)
+        st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>This tab provides a comparison of living costs for Exchange Students.</p>", unsafe_allow_html=True)
         display_spending_comparison()
 
     # Add content for the Buying Power Overview tab here
