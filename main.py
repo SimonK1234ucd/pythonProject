@@ -221,7 +221,7 @@ with leftSide:
             
             if years and initial:
                 data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
-                st.write(f"The Value of {initial} in {years} is {data3b}")
+                st.write(f"The Value of {"{:.2f}".format(initial)} in {years} is {"{:.2f}".format(data3b)}")
             
         
         

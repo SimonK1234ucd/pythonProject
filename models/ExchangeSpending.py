@@ -72,13 +72,13 @@ def display_spending_comparison():
             # Highlight savings or extra costs
             cost_difference = total_spending_comparison - total_spending_home
             if cost_difference > 0:
-                st.warning(f"The comparison city is more expensive by {cost_difference:.2f} EUR.")
+                st.warning(f"{comparison_city} is more expensive by {cost_difference:.2f} EUR.")
             else:
-                st.success(f"You would save {-cost_difference:.2f} EUR in the comparison city.")
+                st.success(f"You would save {-cost_difference:.2f} EUR in the {comparison_city}.")
 
             # Prepare DataFrame for the bar chart
             bar_data = pd.DataFrame({
-                "City": ["Home City", "Comparison City"],
+                "City": [home_city, comparison_city],
                 "Total Spending": [total_spending_home, total_spending_comparison]
             })
 
