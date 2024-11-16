@@ -64,21 +64,21 @@ def display_spending_comparison():
             total_spending_comparison = total_monthly_cost_comparison * exchange_length
 
             # Display the results
-            st.write(f"Monthly Spending (including rent) in {home_city}: {total_monthly_cost_home:.2f} EUR")
-            st.write(f"Adjusted Monthly Spending (including rent) in {comparison_city}: {total_monthly_cost_comparison:.2f} EUR")
-            st.write(f"Total Spending for {exchange_length} months in {home_city}: {total_spending_home:.2f} EUR")
-            st.write(f"Estimated Total Spending for {exchange_length} months in {comparison_city}: {total_spending_comparison:.2f} EUR")
+            st.markdown(f"Monthly Spending (including rent) in {home_city}: {total_monthly_cost_home:.2f} EUR")
+            st.markdown(f"Adjusted Monthly Spending (including rent) in {comparison_city}: {total_monthly_cost_comparison:.2f} EUR")
+            st.markdown(f"Total Spending for {exchange_length} months in {home_city}: {total_spending_home:.2f} EUR")
+            st.markdown(f"Estimated Total Spending for {exchange_length} months in {comparison_city}: {total_spending_comparison:.2f} EUR")
 
             # Highlight savings or extra costs
             cost_difference = total_spending_comparison - total_spending_home
             if cost_difference > 0:
-                st.warning(f"The comparison city is more expensive by {cost_difference:.2f} EUR.")
+                st.warning(f"{comparison_city} is more expensive by {cost_difference:.2f} EUR.")
             else:
-                st.success(f"You would save {-cost_difference:.2f} EUR in the comparison city.")
+                st.success(f"You would save {-cost_difference:.2f} EUR in the {comparison_city}.")
 
             # Prepare DataFrame for the bar chart
             bar_data = pd.DataFrame({
-                "City": ["Home City", "Comparison City"],
+                "City": [home_city, comparison_city],
                 "Total Spending": [total_spending_home, total_spending_comparison]
             })
 

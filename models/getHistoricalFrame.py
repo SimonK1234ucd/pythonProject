@@ -44,9 +44,8 @@ def gettimeframe(currency1,currency2):
         
         #IMPORTANT TO UNDERSTAND
         forchart = pd.DataFrame(list(exchangerate.items()), columns=["Date", "Exchange Rate"]) # expected output: {date: [exchange rate1, exchange rate2, exchange rate3, ...]}
-            
 
-        #st.write(forchart)
+        
         forchart["Date"] = pd.to_datetime(forchart["Date"], errors='coerce')#fucking annoying because streamlit is dumb
         #chart=st.line_chart(forchart.set_index("Date"))
 
