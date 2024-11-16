@@ -2,12 +2,8 @@
 # Use streamlit run main.py to start the program.
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import requests
 import models.getCurrencies as getCurrencies
 import altair as alt
-import models.getHistoricalPoint as getHistoricalPoint
-import models.getHistoricalFrame as getHistoricalFrame
 import models.getChartMPW as getChartMPW
 import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
@@ -19,7 +15,7 @@ import models.getExpenseByIndex as EXP
 
 
 # Set the page configuration
-st.set_page_config(layout="wide", page_title="Exchange Tool")
+st.set_page_config(layout="wide", page_title="Exchange Tool", page_icon="https://seeklogo.com/images/U/university-college-dublin-logo-3AFABC5D8E-seeklogo.com.png")
 
 # Set the page header as a container
 headerContainer = st.container()
@@ -55,18 +51,23 @@ with leftSide:
     
     currencyTypes = getCurrencies.getCurrencyTypes().keys() #because of keys just the KEYs is global defined
 
-
-
-
 # Add content for the Currency Overview tab here
     with currenOverviewTab:
         st.markdown("<p style='font-weight:bold'>Overview of Currencies</p>", unsafe_allow_html=True)
         st.markdown("<p style='font-size:14px'>The Currency Overview displays the value of a selected currency compared to other currencies.</p>", unsafe_allow_html=True)
 
         # Settings Expander    
-        with st.expander("Settings"):
-            selectedCur = st.selectbox("Select Currency", currencyTypes)
-            
+        wrapper = st.container()
+        
+        with wrapper:
+            [left, right] = st.columns(2)
+
+            with left:
+                selectedCur = st.selectbox("Select Currency", currencyTypes)
+
+            with right:
+                sort= st.radio("Sort by Value", ("Ascending", "Descending"))
+
             # Fetch currency list for selected currency
             currencyList = getCurrencies.getSpecificCurrency(selectedCur)
             
@@ -80,7 +81,7 @@ with leftSide:
             maxValue= median +50
 
             threshold =(minValue, maxValue)
-            sort= st.radio("Sort by Value", ("Ascending", "Descending"))
+            
 
         valueColumn = f"Value of 1 {selectedCur}"
 
@@ -98,27 +99,50 @@ with leftSide:
         chart = alt.Chart(filteredData).mark_bar().encode(
             x=alt.X("Currency", sort=None),
             y=valueColumn
-        ).properties(height=400, width=550)
+        ).properties(height=400, width=650)
 
         st.altair_chart(chart)
 
-        
     with compareCurrenciesTab:
+
         st.markdown("<p style='font-weight:bold'>Currency Converter</p>", unsafe_allow_html=True)
         st.markdown("<p style='font-size:14px'>The Currency Converter transforms a selected currency into other specified currencies.</p>", unsafe_allow_html=True)
 
-
+        [left, right] = st.columns(2)        
         #get the base currency and then create the currenylist for this currency
-        curr1=st.selectbox("Select Base currency",currencyTypes)
-        currencylist2=getCurrencies.getSpecificCurrency(curr1)
+        
+        with left:
+            baseCurrency = st.selectbox("Select Base currency",currencyTypes) # e.g. EUR
 
+        with right:
+            amount = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency
         #select here the currency the user like to convert to 
-        curr2= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)
 
-        #for loop for every of the currency 2 selected in the new currency list
-        for currencies in curr2:
 
-            st.write(f"1 {curr1} = {currencylist2[currencies]} {currencies}") #search for the exchange rate in the currency list for every of the cur 2, and print the name of the cur2 out after
+        allCurrencies =getCurrencies.getSpecificCurrency(baseCurrency)
+        selectedCurrencies= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)
+        st.caption("The exchange rates are displayed in current time and are subject to change.")
+
+
+        rows = []
+        headers = ["Base Currency", "Currency", "Exchange Rate", "Amount Exchanged"]
+
+        
+        for currency in selectedCurrencies:
+            selectedAmountExchangeRated = amount * allCurrencies[currency]
+            selectedAmountBaseCurrency = f"{amount} {baseCurrency}"
+            exchangeRateForSingleBaseCurrency = allCurrencies[currency]
+
+            rows.append([selectedAmountBaseCurrency, currency, exchangeRateForSingleBaseCurrency, selectedAmountExchangeRated])
+
+        # Create a DataFrame from the rows
+        df = pd.DataFrame(rows, columns=headers)
+        st.dataframe(df, width=800)
+
+
+        st.caption(f"The bar chart displays the exchange rate of 1 {baseCurrency} of the base currency.")
+        st.bar_chart(df.set_index("Currency")["Exchange Rate"], height=250)
+        
 
     with currenciesHistoricallyTab:
 
@@ -237,9 +261,13 @@ with rightSide:
                 year = selectedYear
 
         dataframe = EXP.getLivingExpenses(year, region)
+    
+
 
         chart_type = "line"
+        st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)")
         st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=800)
+        
 
     # Add content for the Buying Power Overview tab here
     with beerTab:
