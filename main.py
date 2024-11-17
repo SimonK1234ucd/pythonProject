@@ -53,7 +53,7 @@ with leftSide:
 # Add content for the Currency Overview tab here
     with currenOverviewTab:
         st.markdown("<p style='font-weight:bold'>Overview of Currencies</p>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size:14px'>The Currency Overview displays the value of a selected currency compared to other currencies.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>The Currency Overview displays the Exchange Rate of a selected currency compared to other currencies.</p>", unsafe_allow_html=True)
 
         # Settings Expander    
         wrapper = st.container()
@@ -65,7 +65,7 @@ with leftSide:
                 selectedCur = st.selectbox("Select Currency", currencyTypes)
 
             with right:
-                sort= st.radio("Sort by Value", ("Ascending", "Descending"))
+                sort= st.radio("Sort by Exchange Rate", ("Ascending", "Descending"))
 
             # Fetch currency list for selected currency
             currencyList = getCurrencies.getSpecificCurrency(selectedCur)
@@ -82,7 +82,7 @@ with leftSide:
             threshold =(minValue, maxValue)
             
 
-        valueColumn = f"Value of 1 {selectedCur}"
+        valueColumn = f"Exchange Rate "
 
         # Convert sorted list to a DataFrame
         dataForChart = pd.DataFrame(sorted_currency_data, columns=["Currency", valueColumn])
@@ -98,7 +98,7 @@ with leftSide:
         chart = alt.Chart(filteredData).mark_bar().encode(
             x=alt.X("Currency", sort=None),
             y=valueColumn
-        ).properties(height=400, width=650)
+        ).properties(height=600, width =500)
 
         st.altair_chart(chart)
 
@@ -227,14 +227,16 @@ with leftSide:
         
 with rightSide:
     # Changs this to a more correct labelling :)
-    tabs = st.tabs(["Exchange Spending Calculator", "BEER"])
-    exchangeSpendingTab = tabs[0]
-    beerTab = tabs[1]
+    tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator", "BEER"])
+    Costofliv = tabs[0]
+    exchaangespendigcalc = tabs[1]
+    beerTab= tabs[2]
+
 
     # Add content for the Living expenses tab here
-    with exchangeSpendingTab:
-        st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size:14px'>This tab provides a comparison of living costs for Exchange Students.</p>", unsafe_allow_html=True)
+    with Costofliv:
+        st.markdown("<p style='font-weight:bold'>Overview Cost of Living </p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>This tab offers an overview of the cost of living across different countries around the world.</p>", unsafe_allow_html=True)
         #display_spending_comparison()
 
         selectWrapper = st.container()
@@ -265,7 +267,9 @@ with rightSide:
         st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)")
         st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=800)
         
-
+    with exchaangespendigcalc:
+        st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:14px'>This tab offers a comparison of living costs for exchange students.</p>", unsafe_allow_html=True)
     # Add content for the Buying Power Overview tab here
     with beerTab:
         st.markdown("<p style='font-weight:bold'>BEER</p>", unsafe_allow_html=True)
