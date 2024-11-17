@@ -40,7 +40,6 @@ columns = st.columns(2)
 leftSide = columns[0]
 rightSide = columns[1]
 
-
 with leftSide:
     # Create tabs for Currency Converter and Historical Exchange Rates and so on
     tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Purchasing Power Calculator"])
@@ -143,7 +142,6 @@ with leftSide:
         st.caption(f"The bar chart displays the exchange rate of 1 {baseCurrency} of the base currency.")
         st.bar_chart(df.set_index("Currency")["Exchange Rate"], height=250)
         
-
     with currenciesHistoricallyTab:
 
         st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
@@ -225,8 +223,7 @@ with leftSide:
             
             if years and initial:
                 data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
-                st.write(f"The Value of {"{:.2f}".format(initial)} in {years} is {"{:.2f}".format(data3b)}")
-            
+                st.write(f"The Value of {"{:.2f}".format(initial)} in {years} is {"{:.2f}".format(data3b)}")            
         
 with rightSide:
     # Changs this to a more correct labelling :)
