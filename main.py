@@ -34,10 +34,10 @@ with headerContainer:
 
 bodyContainer = st.container()
 with bodyContainer:
-    [costOfLiving, currencyInformation] = st.tabs(["Cost of Living", "Currency Information"])
+    [currencyInformation, CostofLiving] = st.tabs(["Currency Information","Cost of Living" ])
 
 
-    with costOfLiving:
+    with currencyInformation:
         # Create tabs for Currency Converter and Historical Exchange Rates and so on
         tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Purchasing Power Calculator"])
         currenOverviewTab = tabs[0]
@@ -95,7 +95,7 @@ with bodyContainer:
             chart = alt.Chart(filteredData).mark_bar().encode(
                 x=alt.X("Currency", sort=None),
                 y=valueColumn
-            ).properties(height=600, width =500)
+            ).properties(height=600, width =1200)
 
             st.altair_chart(chart)
 
@@ -238,7 +238,7 @@ with bodyContainer:
                     data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
                     st.success(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
             
-        with right:
+        with CostofLiving:
             # Changs this to a more correct labelling :)
             tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator", "BEER"])
             Costofliv = tabs[0]
@@ -353,12 +353,12 @@ with bodyContainer:
 
                     # Box for selecting currency
                     with col1:
-                        curE = st.selectbox("Select Currency to Compare", currencylistE, key = "tab2a")
+                        curE = st.selectbox("Select Currency to Compare", currencylistE, key = "curEtab2a")
 
                     # Dropdown for selecting time period (in the second column)
                     time_periods = ["YTD", "1 year", "2 years", "3 years", "5 years", "10 years", "20 years"]
                     with col2:
-                        date = st.selectbox("Select Time Period", time_periods, key = "time_period") 
+                        date = st.selectbox("Select Time Period", time_periods, key = "timeperioddate") 
                     
                     # Set the current date explicitly for testing or real usage
                     current_date = pd.to_datetime("2024-11-13")
