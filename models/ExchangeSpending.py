@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Load city price level data from the CSV file
-@st.cache_data
+
 def load_price_levels():
     try:
         file_path = Path(__file__).parent.parent / "files" / "europe_city_price_levels_with_rent.csv"

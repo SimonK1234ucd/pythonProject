@@ -4,13 +4,12 @@ import streamlit as st
 import pandas as pd
 import models.getCurrencies as getCurrencies
 import altair as alt
-import models.getChartMPW as getChartMPW
+import models.getChartMPV as getChartMPV
 import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
 from models.getreadfile import getcurrencylistE, getspecificdatedata, getcurrencychart
 from models.getCurrencyRisk import display_currency_risk
 from models.ExchangeSpending import display_spending_comparison
-import models.generateChart as gc
 import models.getExpenseByIndex as EXP
 
 
@@ -74,11 +73,10 @@ with bodyContainer:
                     st.markdown("<p style='font-weight:bold'>Purchasing Power Calculator</p>", unsafe_allow_html=True)
                     st.caption("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the purchasing power of a selected currency.</p>", unsafe_allow_html=True)
         
-                
                     if country:
-                        data3=getChartMPW.getchartforMPW(country)
+                        data3 = getChartMPV.CountryPurchasingPower(country)
                         st.write(f"Hisorical Money Purchasing Power of {country}: ")
-                        st.line_chart(data3.set_index("Year"))
+                        st.dataframe(data3.set_index("Year"))
                     
                     if years and initial:
                         data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)

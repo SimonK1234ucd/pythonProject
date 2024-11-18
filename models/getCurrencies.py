@@ -1,8 +1,6 @@
 
 # Request is an external module, that allows you to make request to a server and get a response back, a.k.a an API :).
 import requests
-
-
 def FetchDataFromAPI(url):
 
     # We use requests.get to get the content of the url
@@ -19,7 +17,6 @@ def FetchDataFromAPI(url):
     else:
         return "Error", response.status_code
     
-
 
 def getSpecificCurrency(cur):
 

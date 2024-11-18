@@ -5,27 +5,19 @@ import requests
 
 
 def gettimeframe(currency1,currency2):
-    #st.write('''Real-Time Currency data from "ForexRateAPI"''')
-    #st.write('''Maximum Range is 365 days, no data before 2000''')
 
-
-    
     key="d6f3714af7452487c54e61a84a08dff4"
     base=f"https://api.forexrateapi.com/v1/timeframe"
 
-    
-    #currencys=["EUR","USD","JPY","CNY","GBP"]
-    #currency1=st.sidebar.selectbox("Select the base currency to convert: ",(currencys),key="currency1")
-    #currency2=st.sidebar.selectbox("Select the currency to convert: ",(currencys),key="currency2") 
     startdate="2024-10-10"
     enddate="2024-10-15"
 
-
+    #IMPORTANT TO UNDERSTAND
+    # Alters the URL to include the API key, the start date, end date, base currency and the currency to be converted to
+    request_url = f"{base}?api_key={key}&start_date={startdate}&end_date={enddate}&base={currency1}&currencies={currency2}"
 
     #IMPORTANT TO UNDERSTAND
-    request_url = request_url = f"{base}?api_key={key}&start_date={startdate}&end_date={enddate}&base={currency1}&currencies={currency2}"
-
-    #IMPORTANT TO UNDERSTAND
+    # Gets the data from the API, like when you access pinterest.com and get the images :)
     response = requests.get(request_url)
 
 
@@ -33,8 +25,8 @@ def gettimeframe(currency1,currency2):
 
         # Formats the data into json format: e.g. {country_code : "DK", country_name : "Denmark"}
         data = response.json()
-        #st.write("200")
         
+
         # The data["rates"] grabs the value of the key "rates" from the json data and defines it as a variable called rates (for easy access and reference...)
         rates=data["rates"]
 
@@ -50,11 +42,11 @@ def gettimeframe(currency1,currency2):
         #chart=st.line_chart(forchart.set_index("Date"))
 
         return forchart
-    
-
 
     else:
-        error1=st.write("Error", response.status_code)
+        # Defines the error
+        error1 = st.write("Error", response.status_code)
+        # Returns the error instead :)
         return error1
 
 
