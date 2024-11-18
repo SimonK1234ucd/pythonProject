@@ -20,54 +20,49 @@ def display_currency_risk(cur):
     try:
         # Get the current date
         start_date = pd.Timestamp(date.today())
-        st.markdown(f"Assessing currency risk as of {cur} on {start_date}")
+        st.markdown(f"Assessing currency risk for {cur} as of {start_date.date()}")
         
-        [left, right] = st.columns(2)
-
         # Get historical data for the selected currency
         data = getcurrencychart(cur)
-
         data.index = pd.to_datetime(data.index)  # Ensure datetime index
-        
+
         # Filter and calculate stats
         filtered_data = data[data.index >= start_date].copy()
 
         filtered_data['Pct_Change'] = filtered_data[cur].pct_change().abs().fillna(0) * 100
-        
+        print(filtered_data)
         data['Pct_Change'] = data[cur].pct_change().fillna(0)
 
         recent_daily_volatility = data['Pct_Change'].tail(252).std()
-
         recent_annual_volatility = recent_daily_volatility * (252 ** 0.5)
-        
+
         risk_level, risk_message = assess_risk_level(recent_annual_volatility)
-        
+
         # Calculate Maximum Drawdown
         filtered_data['Cumulative_Max'] = filtered_data[cur].cummax()
         filtered_data['Drawdown'] = (filtered_data[cur] - filtered_data['Cumulative_Max']) / filtered_data['Cumulative_Max']
         max_drawdown = filtered_data['Drawdown'].min() * 100
-        
+
         # Display Statistics
         risk_data = pd.DataFrame({
             "Metric": ["Most Recent Annual Volatility", "Maximum Drawdown"],
             "Value": [f"{recent_annual_volatility:.2f}%", f"{max_drawdown:.2f}%"]
         })
 
-        with left:
-            st.markdown("### Statistics")
-            st.dataframe(risk_data)
-        
-        # Plot Chart
-        forchart = filtered_data[['Pct_Change']].reset_index()
-        with right:
-            st.markdown("### Volatility")
-            st.line_chart(forchart.set_index('index')['Pct_Change'], height=200)
-        
-        # Display Risk Assessment
+        st.table(risk_data)
         st.info(risk_message)
-        
+
+        # Prepare data for plotting
+        filtered_data.index.name = 'index'  # Ensure index has a name
+
+
+
+        forchart = filtered_data[['Pct_Change']].reset_index()
+
+        st.line_chart(forchart.set_index('index')['Pct_Change'], height=200)
+
+    
         return recent_annual_volatility, risk_level
     except Exception as e:
         st.error(f"Error in currency risk assessment: {e}")
         return None, None
-

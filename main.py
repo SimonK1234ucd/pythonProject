@@ -92,7 +92,6 @@ with bodyContainer:
                 
             with right:
                 # Title of the section
-                st.markdown("<p style='font-weight:bold'>Currency Risk Assement</p>", unsafe_allow_html=True)
                 display_currency_risk(selectedCurrency)
 
                 st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
