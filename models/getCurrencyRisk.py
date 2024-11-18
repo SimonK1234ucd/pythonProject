@@ -3,12 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from models.getreadfile import getcurrencychart
 import numpy as np
-
-# Set the current date explicitly for testing or real usage
-current_date = pd.to_datetime("2024-11-13")
+import time
 
 # Function to assess the currency risk and return the visuals
-def display_currency_risk(cur, start_date):
+def display_currency_risk(cur):
+
+    start_date = time.date.today()
+    print("Assesing currency risk as of", start_date)
+
     columns=st.columns(2)
     col1=columns[0]
     col2=columns[1]
