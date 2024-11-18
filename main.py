@@ -214,16 +214,31 @@ with leftSide:
                 listcountrys=getPurchasingPower.getHistoricalPPlist()
                 country=st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
                 initial=st.number_input("Provide Amount today")
-                years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY)")
+                years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY) (Range: 1970-2023)")
+                
+                #year format check
+                checkb=False
+                if years:
+                    try:
+                        checka=int(years)
+                    
+                        if checka >=1970 and checka<=2024:
+                            checkb=True
+
+                        else: 
+                            st.error("Please provide a year in given format and range")
+                    except ValueError:
+                        st.error("Please enter a valid year in the format YYYY.")
+
 
             if country:
                 data3=getChartMPW.getchartforMPW(country)
                 st.write(f"Hisorical Money Purchasing Power of {country}: ")
                 st.line_chart(data3.set_index("Year"))
             
-            if years and initial:
+            if checkb==True and initial:
                 data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
-                st.write(f"The Value of {"{:.2f}".format(initial)} in {years} is {"{:.2f}".format(data3b)}")            
+                st.success(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
         
 with rightSide:
     # Changs this to a more correct labelling :)
@@ -273,6 +288,7 @@ with rightSide:
     # Add content for the Buying Power Overview tab here
     with beerTab:
         st.markdown("<p style='font-weight:bold'>BEER</p>", unsafe_allow_html=True)
+
         # Add content for the Buying Power Overview tab here
     
     
