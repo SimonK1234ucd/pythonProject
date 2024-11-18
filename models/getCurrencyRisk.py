@@ -42,9 +42,6 @@ def display_currency_risk(cur, start_date):
         risk_level = "High"
         risk_message = "High Volatility: Significant fluctuations may occur."
     
-    #Calculate Value at Risk (VaR) at 95% confidence level
-    var_95 = np.percentile(filtered_data['Pct_Change'].dropna(), 5)
-
     # Calculate Maximum Drawdown
     filtered_data['Cumulative_Max'] = filtered_data[cur].cummax()
     filtered_data['Drawdown'] = (filtered_data[cur] - filtered_data['Cumulative_Max']) / filtered_data['Cumulative_Max']
@@ -52,20 +49,14 @@ def display_currency_risk(cur, start_date):
 
 
     riskData = {
-    "Metric": ["Most Recent Annual Volatility", "Value at Risk (95%)", "Maximum Drawdown"],
-    "Value": [f"{recent_annual_volatility:.2f}%", f"{var_95:.2f}%", f"{max_drawdown:.2f}%"]
+    "Metric": ["Most Recent Annual Volatility", "Maximum Drawdown"],
+    "Value": [f"{recent_annual_volatility:.2f}%", f"{max_drawdown:.2f}%"]
     }
     riskdatatfrme = pd.DataFrame(riskData)
 
     with col1:
         st.markdown("Statistics: ")
         st.table(riskdatatfrme)
-
-
-    # Display risk assessment in Streamlit
-    #st.markdown(f"Most Recent annual Volatility: {recent_annual_volatility:.2f}%")
-    #st.markdown(f"Value at Risk: {var_95:.2f}%")
-    #st.markdown(f"Maximum Drawdown: {max_drawdown:.2f}%")
 
     # Prepare DataFrame for the percentage change chart
     forchart = pd.DataFrame({
