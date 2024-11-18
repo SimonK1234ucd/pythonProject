@@ -186,7 +186,7 @@ with leftSide:
 
         # Display the historical chart
         st.write(f"Historical Data of {curE} for the Selected Time Period ({date})")
-        st.line_chart(chartplot)
+        st.line_chart(chartplot, height=250)
         
         # Display currency risk assessment
         st.markdown("<p style='font-weight:bold; font-size:22px'>Currency Risk Assessment:</p>", unsafe_allow_html=True)
