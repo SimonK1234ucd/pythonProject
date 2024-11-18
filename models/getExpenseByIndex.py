@@ -69,7 +69,7 @@ def getLivingExpenses(year, region=None):
     dataframe = pd.DataFrame(data, columns=headers)
 
     # Printss a summerized version of the dataframe
-    print("Returning, DataFrame:", dataframe.count())
+    #print("Returning, DataFrame:", dataframe.count())
 
     # Retunrs the actual dataframe in standard format
     return dataframe    

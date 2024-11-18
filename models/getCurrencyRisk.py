@@ -4,79 +4,70 @@ import matplotlib.pyplot as plt
 from models.getreadfile import getcurrencychart
 import numpy as np
 import time
+from datetime import date
+
+def assess_risk_level(volatility):
+    if volatility < 1:
+        return "Low", "Low Volatility: The currency is relatively stable."
+    elif 1 <= volatility < 3:
+        return "Medium", "Medium Volatility: The currency has moderate fluctuations."
+    else:
+        return "High", "High Volatility: Significant fluctuations may occur."
+
 
 # Function to assess the currency risk and return the visuals
 def display_currency_risk(cur):
+    try:
+        # Get the current date
+        start_date = pd.Timestamp(date.today())
+        st.markdown(f"Assessing currency risk as of {cur} on {start_date}")
+        
+        [left, right] = st.columns(2)
 
-    start_date = time.date.today()
-    print("Assesing currency risk as of", start_date)
+        # Get historical data for the selected currency
+        data = getcurrencychart(cur)
 
-    columns=st.columns(2)
-    col1=columns[0]
-    col2=columns[1]
-    
-    # Get historical data for the selected currency
-    data = getcurrencychart(cur)
+        data.index = pd.to_datetime(data.index)  # Ensure datetime index
+        
+        # Filter and calculate stats
+        filtered_data = data[data.index >= start_date].copy()
 
-    # Filter the data based on the selected time period
-    filtered_data = data[data.index >= start_date]
+        filtered_data['Pct_Change'] = filtered_data[cur].pct_change().abs().fillna(0) * 100
+        
+        data['Pct_Change'] = data[cur].pct_change().fillna(0)
 
-    # Calculate the percentage change on the filtered data
-    filtered_data['Pct_Change'] = filtered_data[cur].pct_change().abs() * 100
+        recent_daily_volatility = data['Pct_Change'].tail(252).std()
 
-    # Calculate percentage change and volatility
-    data['Pct_Change'] = data[cur].pct_change().fillna(0)
-    
-    # Calculate the most recent monthly volatility (last 12 months)
-    recent_daily_volatility = data['Pct_Change'].tail(252).std()
+        recent_annual_volatility = recent_daily_volatility * (252 ** 0.5)
+        
+        risk_level, risk_message = assess_risk_level(recent_annual_volatility)
+        
+        # Calculate Maximum Drawdown
+        filtered_data['Cumulative_Max'] = filtered_data[cur].cummax()
+        filtered_data['Drawdown'] = (filtered_data[cur] - filtered_data['Cumulative_Max']) / filtered_data['Cumulative_Max']
+        max_drawdown = filtered_data['Drawdown'].min() * 100
+        
+        # Display Statistics
+        risk_data = pd.DataFrame({
+            "Metric": ["Most Recent Annual Volatility", "Maximum Drawdown"],
+            "Value": [f"{recent_annual_volatility:.2f}%", f"{max_drawdown:.2f}%"]
+        })
 
-    # Annualize the volatility
-    recent_annual_volatility = recent_daily_volatility * (252 ** 0.5)
+        with left:
+            st.markdown("### Statistics")
+            st.dataframe(risk_data)
+        
+        # Plot Chart
+        forchart = filtered_data[['Pct_Change']].reset_index()
+        with right:
+            st.markdown("### Volatility")
+            st.line_chart(forchart.set_index('index')['Pct_Change'], height=200)
+        
+        # Display Risk Assessment
+        st.info(risk_message)
+        
+        return recent_annual_volatility, risk_level
+    except Exception as e:
+        st.error(f"Error in currency risk assessment: {e}")
+        return None, None
 
-    # Determine risk level
-    if recent_annual_volatility < 1:
-        risk_level = "Low"
-        risk_message = "Low Volatility: The currency is relatively stable."
-    elif 1 <= recent_annual_volatility < 3:
-        risk_level = "Medium"
-        risk_message = "Medium Volatility: The currency has moderate fluctuations."
-    else:
-        risk_level = "High"
-        risk_message = "High Volatility: Significant fluctuations may occur."
-    
-    # Calculate Maximum Drawdown
-    filtered_data['Cumulative_Max'] = filtered_data[cur].cummax()
-    filtered_data['Drawdown'] = (filtered_data[cur] - filtered_data['Cumulative_Max']) / filtered_data['Cumulative_Max']
-    max_drawdown = filtered_data['Drawdown'].min() * 100  # Convert to percentage
-
-
-    riskData = {
-    "Metric": ["Most Recent Annual Volatility", "Maximum Drawdown"],
-    "Value": [f"{recent_annual_volatility:.2f}%", f"{max_drawdown:.2f}%"]
-    }
-    riskdatatfrme = pd.DataFrame(riskData)
-
-    with col1:
-        st.markdown("Statistics: ")
-        st.table(riskdatatfrme)
-
-    # Prepare DataFrame for the percentage change chart
-    forchart = pd.DataFrame({
-        "Date": filtered_data.index,
-        "Percentage Change": filtered_data['Pct_Change']
-    })
-
-    # Convert "Date" column to datetime
-    forchart["Date"] = pd.to_datetime(forchart["Date"], errors='coerce')
-
-    # Plot the percentage change using Streamlit's built-in line chart
-
-    with col2:
-        st.markdown("Volatility: ")
-        st.line_chart(forchart.set_index("Date")["Percentage Change"], height=200)
-
-    # Display risk assessment
- 
-    st.info(risk_message)
-
-    return recent_annual_volatility, risk_level
