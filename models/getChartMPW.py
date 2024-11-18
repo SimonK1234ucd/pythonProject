@@ -1,28 +1,46 @@
 import pandas as pd
-import requests
 import streamlit as st
 from pathlib import Path
 
-# The purpose of this file is to generate a chart given the parameters: import1 and selectionchoosen
-        # import1: the dataframe containing the data e.g. [Year, Country, Value]
-        # selectionchoosen: the country selected by the user e.g. "USA"
 
-def getchartforMPW(selectionchoosen):
+# This function illustrates the evolution of the money purchasing power of a country
+def CountryPurchasingPower(selectedCountry):
+
+        # Check if the selected country is a string        
+        if type (selectedCountry) != str:
+                return st.error("Please select a country")
+
+        # Gets the path of the file...
         file_path = Path(__file__).parent.parent / "files" / "inflation_data.xlsx"
-        import1 = pd.read_excel(file_path)
 
-        country = import1[import1['Country'] == selectionchoosen]
-        valuescountry=country.iloc[:, 2:].values.flatten().tolist()
-        moneyvalue=100
-        dataforchart=[100]
-        for year in valuescountry: 
-                moneyvalue=moneyvalue*(1-(year/100))
-                dataforchart.append(moneyvalue)
+        # Read the data from the file
+        file = pd.read_excel(file_path)
+
+        # Filter the data by the country selected by the user
+        country = file[file['Country'] == selectedCountry]
+
+        # Input format: [Year, Country, Value] -->  Output format: [Value1, Value2, Value3, ...]
+        countryValues = country.iloc[:, 2:].values.flatten().tolist()
+
+        # Calculates the money of the country in the year 1970
+        moneyValue = 100
+
+        dataForChart = [100]
+
+        for year in countryValues: 
+                moneyValue=moneyValue*(1-(year/100))
+                dataForChart.append(moneyValue)
         
         #st.line_chart(dataforchart.set_index('Year'))
-        years = list(range(1970, 1970 + len(dataforchart)))
-        data3 = pd.DataFrame({"Year": years,"Value": dataforchart })
-        data3["Year"] = pd.to_datetime(data3["Year"], format='%Y',errors='coerce')
+        years = list(range(1970, 1970 + len(dataForChart)))
+
+        # Create a dataframe with the data to be displayed in the chart
+        dataFrame = pd.DataFrame({
+                "Year": years,
+                "Value": dataForChart })
+
+        # Convert the year to datetime so it can be displayed in the chart
+        dataFrame["Year"] = pd.to_datetime(dataFrame["Year"], format='%Y',errors='coerce')
         
-        return data3
+        return dataFrame
         
