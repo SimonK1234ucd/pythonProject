@@ -12,6 +12,7 @@ from models.getCurrencyRisk import display_currency_risk
 from models.ExchangeSpending import display_spending_comparison
 #import models.generateChart as gc
 import models.getExpenseByIndex as EXP
+import models.getExchangeCalculator as ESC
 
 
 # Set the page configuration
@@ -290,6 +291,28 @@ with bodyContainer:
 
                 with left:
                     st.write("Put in your Information")
+                    selectedRegioncalculatororigin = st.selectbox("Select Regio of Origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
+                    year=2024
+
+                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()
+                    origin=st.selectbox("Please provide your Home-country",listofcountries)
+
+                    selectedRegioncalculatordestination = st.selectbox("Select Regio of Origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
+                    listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()
+                    destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
+                    
+                    totalamount=st.number_input("Put in your total spendings")
+                    rentamount=st.number_input("Put in your rent spendings")
+                    grocamount=st.number_input("Put in your groc spendings")
+                    restaurantamount=st.number_input("Put in rent total spendings")
+
+                    ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
+                    
+
+
+
+
+
                 with right:
                     st.write("calculated:")
                     
