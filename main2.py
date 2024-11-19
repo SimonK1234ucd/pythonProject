@@ -132,7 +132,7 @@ with bodyContainer:
 
             # Create a DataFrame from the rows
             df = pd.DataFrame(rows, columns=headers)
-            st.dataframe(df, width=800)
+            st.dataframe(df, width=1250)
 
 
             st.caption(f"The bar chart displays the exchange rate of 1 {baseCurrency} of the base currency.")
@@ -187,7 +187,7 @@ with bodyContainer:
             
             # Display currency risk assessment
             st.markdown("<p style='font-weight:bold; font-size:22px'>Currency Risk Assessment:</p>", unsafe_allow_html=True)
-            display_currency_risk(curE)
+            display_currency_risk(curE,start_date)
 
         with purchasingPowerTab:
 
@@ -240,10 +240,10 @@ with bodyContainer:
             
         with CostofLiving:
             # Changs this to a more correct labelling :)
-            tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator", "BEER"])
+            tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator"])
             Costofliv = tabs[0]
             exchaangespendigcalc = tabs[1]
-            beerTab= tabs[2]
+         
 
 
             # Add content for the Living expenses tab here
@@ -284,12 +284,14 @@ with bodyContainer:
                 st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
                 st.markdown("<p style='font-size:14px'>This tab offers a comparison of living costs for exchange students.</p>", unsafe_allow_html=True)
             # Add content for the Buying Power Overview tab here
-            
-            with beerTab:
+                tabs=st.columns(2)
+                left=tabs[0]
+                right=tabs[1]
 
-                st.markdown("<p style='font-weight:bold'>BEER</p>", unsafe_allow_html=True)
-
-                # Add content for the Buying Power Overview tab here
+                with left:
+                    st.write("Put in your Information")
+                with right:
+                    st.write("calculated:")
                     
     with currencyInformation:
             
