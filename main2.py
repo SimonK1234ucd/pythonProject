@@ -290,22 +290,23 @@ with bodyContainer:
                 right=tabs[1]
 
                 with left:
-                    st.write("Put in your Information")
-                    selectedRegioncalculatororigin = st.selectbox("Select Regio of Origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
+                    st.write("Enter the information of your origin country")
+                    selectedRegioncalculatororigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
                     year=2024
 
                     listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()
                     origin=st.selectbox("Please provide your Home-country",listofcountries)
-
-                    selectedRegioncalculatordestination = st.selectbox("Select Regio of Origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
+                with right:
+                    st.write("Enter the information of your perfered destination")
+                    selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
                     listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()
                     destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
-                    
-                    totalamount=st.number_input("Put in your total spendings")
-                    rentamount=st.number_input("Put in your rent spendings")
-                    grocamount=st.number_input("Put in your groc spendings")
-                    restaurantamount=st.number_input("Put in rent total spendings")
-
+                with left:    
+                    totalamount=int(st.number_input("Put in your total spendings"))
+                    rentamount=int(st.number_input("Put in your rent spendings"))
+                    grocamount=int(st.number_input("Put in your groc spendings"))
+                    restaurantamount=int(st.number_input("Put in rent total spendings"))
+                with right:
                     ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
                     
 
@@ -313,8 +314,7 @@ with bodyContainer:
 
 
 
-                with right:
-                    st.write("calculated:")
+              
                     
     with currencyInformation:
             
