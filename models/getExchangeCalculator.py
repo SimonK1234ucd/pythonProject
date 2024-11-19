@@ -11,33 +11,33 @@ def getcalculatorforexchange(selectedregion, selectedregion2, origin, destinatio
     data2 = EXP.getLivingExpenses(year, selectedregion2)
     
     # Find row indices for origin and destination
-    origin_row = data[data.iloc[:, 1] == origin]  
-    destination_row = data2[data2.iloc[:, 1] == destination]
+    originrow = data[data.iloc[:, 1] == origin]  
+    destinationrow = data2[data2.iloc[:, 1] == destination]
 
     # to chech if there is an error
-    if origin_row.empty:
+    if originrow.empty:
         raise ValueError(f"Origin '{origin}' not found in the data.")
-    if destination_row.empty:
+    if destinationrow.empty:
         raise ValueError(f"Destination '{destination}' not found in the data.")
 
-    # Extract values from the rows
-    totalindex = float(origin_row.iloc[0, 2])  
-    rentindex = float(origin_row.iloc[0, 3])  
-    grocindex = float(origin_row.iloc[0, 4]) 
-    restarauntindex = float(origin_row.iloc[0, 5])  
+    # Extract values from the each of the rows
+    totalindex = float(originrow.iloc[0, 2])  
+    rentindex = float(originrow.iloc[0, 3])  
+    grocindex = float(originrow.iloc[0, 4]) 
+    restarauntindex = float(originrow.iloc[0, 5])  
 
-    totalindex2 = float(destination_row.iloc[0, 2])  
-    rentindex2 = float(destination_row.iloc[0, 3])  
-    grocindex2 = float(destination_row.iloc[0, 4])  
-    restarauntindex2 = float(destination_row.iloc[0, 5])  
+    totalindex2 = float(destinationrow.iloc[0, 2])  
+    rentindex2 = float(destinationrow.iloc[0, 3])  
+    grocindex2 = float(destinationrow.iloc[0, 4])  
+    restarauntindex2 = float(destinationrow.iloc[0, 5])  
 
-    # Perform calculations
+  
     newtotalamount = (totalamount * (1 / totalindex)) * totalindex2
     newrentamount = (rent * (1 / rentindex)) * rentindex2
     newgrocamount = (groc * (1 / grocindex)) * grocindex2
     newrestarauntamount = (restaraunt * (1 / restarauntindex)) * restarauntindex2
 
-    # Create and display a DataFrame for the results
+
     returndata = pd.DataFrame({
         "Kind of spending": ["Total-Amount", "Rent-Amount", "Grocery-Amount", "Restaurant Amount"],
         origin: [totalamount, rent, groc, restaraunt],
