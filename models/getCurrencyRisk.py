@@ -17,7 +17,7 @@ def assess_risk_level(volatility):
 
 # Function to assess the currency risk and return the visuals
 def display_currency_risk(cur):
-    try:
+   # try:
         # Get the current date
         start_date = pd.Timestamp(date.today())
         st.markdown(f"Assessing currency risk for {cur} as of {start_date.date()}")
@@ -63,6 +63,6 @@ def display_currency_risk(cur):
 
     
         return recent_annual_volatility, risk_level
-    except Exception as e:
-        st.error(f"Error in currency risk assessment: {e}")
-        return None, None
+   # except Exception as e:
+    #    st.error(f"Error in currency risk assessment: {e}")
+     #   return None, None

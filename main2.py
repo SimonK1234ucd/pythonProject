@@ -7,10 +7,10 @@ import altair as alt
 import models.getChartMPV as getChartMPV
 import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
-from models.getreadfile import getcurrencylistE, getspecificdatedata, getcurrencychart
+from models.getreadfile import getAllCurrenciesComparedToEuro, getspecificdatedata, getcurrencychart
 from models.getCurrencyRisk import display_currency_risk
 from models.ExchangeSpending import display_spending_comparison
-import models.generateChart as gc
+#import models.generateChart as gc
 import models.getExpenseByIndex as EXP
 
 
@@ -145,7 +145,7 @@ with bodyContainer:
             st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
             # Get the list of currencies
-            currencylistE=getreadfile.getcurrencylistE()
+            currencylistE=getreadfile.getAllCurrenciesComparedToEuro()
 
             # Create two columns for side-by-side selection boxes
             col1, col2 = st.columns(2)
@@ -187,7 +187,7 @@ with bodyContainer:
             
             # Display currency risk assessment
             st.markdown("<p style='font-weight:bold; font-size:22px'>Currency Risk Assessment:</p>", unsafe_allow_html=True)
-            display_currency_risk(curE, start_date)
+            display_currency_risk(curE)
 
         with purchasingPowerTab:
 
@@ -333,7 +333,7 @@ with bodyContainer:
                             years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY)")
 
                     if country:
-                        data3=getChartMPV.getchartforMPW(country)
+                        data3=getChartMPV.CountryPurchasingPower(country)
                         st.write(f"Hisorical Money Purchasing Power of {country}: ")
                         st.line_chart(data3.set_index("Year"))
                     
@@ -346,7 +346,7 @@ with bodyContainer:
                     st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
                     # Get the list of currencies
-                    currencylistE=getreadfile.getcurrencylistE()
+                    currencylistE=getreadfile.getAllCurrenciesComparedToEuro()
 
                     # Create two columns for side-by-side selection boxes
                     col1, col2 = st.columns(2)
