@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import models.getCurrencies as getCurrencies
 import altair as alt
-import models.getChartMPW as getChartMPW
+import models.getChartMPV as getChartMPV
 import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
 from models.getreadfile import getcurrencylistE, getspecificdatedata, getcurrencychart
@@ -230,7 +230,7 @@ with bodyContainer:
 
 
                 if country:
-                    data3=getChartMPW.getchartforMPW(country)
+                    data3=getChartMPV.getchartforMPW(country)
                     st.write(f"Hisorical Money Purchasing Power of {country}: ")
                     st.line_chart(data3.set_index("Year"))
                 
@@ -333,7 +333,7 @@ with bodyContainer:
                             years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY)")
 
                     if country:
-                        data3=getChartMPW.getchartforMPW(country)
+                        data3=getChartMPV.getchartforMPW(country)
                         st.write(f"Hisorical Money Purchasing Power of {country}: ")
                         st.line_chart(data3.set_index("Year"))
                     

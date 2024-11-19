@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-def getcurrencylistE():
+def getAllCurrenciesComparedToEuro():
     file_path= Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
     reader= pd.read_csv(file_path)
 
