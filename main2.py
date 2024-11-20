@@ -301,14 +301,32 @@ with bodyContainer:
                     selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
                     listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()
                     destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
-                with left:    
-                    totalamount=int(st.number_input("Put in your total spendings"))
-                    rentamount=int(st.number_input("Put in your rent spendings"))
-                    grocamount=int(st.number_input("Put in your groc spendings"))
-                    restaurantamount=int(st.number_input("Put in rent total spendings"))
-                with right:
-                    ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
-                    
+                    button=st.button("start calculation")
+
+                with left: 
+                    with st.expander("Settings"):
+                        checkcalculator=st.radio("Choose your prevered setting", ["standard", "advanced"] )
+                        if checkcalculator=="advanced":
+                   # totalamount=int(st.number_input("Put in your total spendings"))
+                            rentamount=int(st.number_input("Put in your rent spendings"))
+                            grocamount=int(st.number_input("Put in your groc spendings"))
+                            restaurantamount=int(st.number_input("Put in rent total spendings"))
+                            totalamount=rentamount+grocamount+restaurantamount
+                            with right:
+                                if button:
+                                    if totalamount==0:
+                                        st.write("Please Provide Amount")
+                                    else:
+                                        ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
+                        if checkcalculator=="standard":
+                            totalamount2=int(st.number_input("Put in your total spendings"))
+                            with right:
+                                if button:
+                                    if totalamount2==0:
+                                        st.write("Please Provide Amount")
+                                    else:
+                                        ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
+                                    
 
 
 
