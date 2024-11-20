@@ -68,7 +68,7 @@ def getLivingExpenses(year, region=None):
         return
     
     # Parses the response text with BeautifulSoup
-     # BeautifulSoup is a library that makes it easy to scrape information from web pages
+    # BeautifulSoup is a library that makes it easy to scrape information from web pages
     soup = BeautifulSoup(response.text, "html.parser")
     
     # Locate table with id 't2'
@@ -89,13 +89,18 @@ def getLivingExpenses(year, region=None):
     headerCellAsList = theader.find_all("th")
 
     # This loop is set up a bit differently unlike the usualy format:
-        # the aciton is declared in the first part of the loop and returns the value
+    # the aciton is declared in the first part of the loop and returns the value
     headers = [cell.text.strip() for cell in headerCellAsList]
 
     #Delcares an empty list to hold data records... :)
     data = []
     # Iterates through the fetched
-    for tr in tbody.find_all("tr"):
+        # tr = table row
+    #Finds all rows in table body
+    rows = tbody.find_all("tr")
+
+    #Iterates through the rows
+    for tr in rows:
         # Same as above, but for the rows of the table
         row = [td.text.strip() for td in tr.find_all("td")]
 
@@ -109,6 +114,4 @@ def getLivingExpenses(year, region=None):
     #print("Returning, DataFrame:", dataframe.count())
 
     # Retunrs the actual dataframe in standard format
-    return dataframe    
-
-getLivingExpenses(2024)
+    return dataframe

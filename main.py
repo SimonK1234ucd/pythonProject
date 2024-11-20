@@ -9,7 +9,6 @@ import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
 from models.getreadfile import getAllCurrenciesComparedToEuro, getspecificdatedata, getcurrencychart
 from models.getCurrencyRisk import display_currency_risk
-from models.ExchangeSpending import display_spending_comparison
 #import models.generateChart as gc
 import models.getExpenseByIndex as EXP
 import models.getExchangeCalculator as ESC
@@ -36,7 +35,7 @@ bodyContainer = st.container()
 with bodyContainer:
     [currencyInformation, CostofLiving] = st.tabs(["Currency Information","Cost of Living" ])
 
-
+    # Tab that displays currency information (the first tab, akak the landing page...)
     with currencyInformation:
         # Create tabs for Currency Converter and Historical Exchange Rates and so on
         tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Purchasing Power Calculator"])
@@ -80,7 +79,7 @@ with bodyContainer:
             filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]
 
             # Display the filtered and sorted bar chart
-            chart = st.line-ch(filteredData.sort_values(by=valueColumn, ascending=True), x="Currency", y=valueColumn, height=500)
+            chart = st.line_chart(filteredData.sort_values(by=valueColumn, ascending=True), x="Currency", y=valueColumn, height=500)
             
                      
 
@@ -182,64 +181,78 @@ with bodyContainer:
             [historical,future]=st.columns(2)
             with future:
                 st.write("Future Purchasing Power Calulator")
+
             #if check=="Future Purchasing Power":
                 with st.expander("Settings"):
-                    initial=st.number_input("Provide Initial Amount in EUR")
-                    average=st.number_input("Provide Average Inflation Rate in %  (max. 20%)")
-                    years=st.number_input("Provide Amount of Years  (max. 100)")
-                if years and initial and average!=0:
-                    forprint=getPurchasingPower.getFuturePP(initial,average,years)
-                    st.info(forprint)
+                    initialAmount = st.number_input("Provide Initial Amount in EUR")
+
+                    average =st.number_input("Provide Average Inflation Rate in %  (max. 20%)")
+
+                    years =st.number_input("Provide Amount of Years  (max. 100)")
+
+                if years and initialAmount and average!=0:
+                    # Display the future purchasing power of the selected currency
+                    displayedContent = getPurchasingPower.getFuturePP(initialAmount, average, years)
+                
+                    st.info(displayedContent)
             
             with historical:
                 st.write("Historical Purchasing Power Calulator")
                 with st.expander("Settings"):
-                    listcountrys=[]
                     listcountrys=getPurchasingPower.getHistoricalPPlist()
-                    country=st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
-                    initial=st.number_input("Provide Amount today")
-                    years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY) (Range: 1970-2023)")
+                    country = st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
+                    initialAmount = st.number_input("Provide Amount today")
+                    #yearInput
+                    years = st.text_input("What year do you like to know the Purchasing Power of? (YYYY) (Range: 1970-2023)")
                     
                     #year format check
-                    checkb=False
+                    isSelectedYearWithInYears = False
+
                     if years:
                         try:
-                            checka=int(years)
+                            selectedYear = int(years)
                         
-                            if checka >=1970 and checka<=2024:
-                                checkb=True
+                            if selectedYear >=1970 and selectedYear <= 2023:
+                                isSelectedYearWithInYears = True
 
                             else: 
                                 st.error("Please provide a year in given format and range")
                         except ValueError:
                             st.error("Please enter a valid year in the format YYYY.")
+                
+                # Checks for that the provided year is within the range of the data and an amount is provided
+                if isSelectedYearWithInYears and initialAmount:
 
+                    historicalPPData = getPurchasingPower.getHistorialPPdata(country, years, initialAmount)
 
+                    #Displayed the returned information from getHistorialPPdata
+                    st.info(f"The Purchasing Power of {"{:.2f}".format(initialAmount)} today is equal to {"{:.2f}".format(historicalPPData)} in {years}")            
+
+            # Out side of historical
             if country:
-                data3=getChartMPV.CountryPurchasingPower(country)
-                st.write(f"Hisorical Money Purchasing Power of {country}: ")
-            
-                st.line_chart(data3.set_index("Year"))
-            with historical:        
-                if checkb==True and initial:
-                    data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
-                    st.info(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
-            
+                dateframeOfCountryPurchasingPower = getChartMPV.CountryPurchasingPower(country)
 
+                st.write(f"Hisorical Money Purchasing Power of {country}: ")
+                st.line_chart(dateframeOfCountryPurchasingPower.set_index("Year"))
+
+                st.caption("SIMON KOOS YOU NEED TO EXPLAN THIS IN A SERIOUS AMOUNT OF DETAIL")
+            
+    # Display the historical purchasing power of the selected currency
     with CostofLiving:
             # Changs this to a more correct labelling :)
         tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator"])
         CoLOverview = tabs[0]
-        exchaangespendigcalc = tabs[1]
+        exchangeSpendingCalc = tabs[1]
         
         # Add content for the Living expenses tab here
         with CoLOverview:
             st.markdown("<p style='font-weight:bold'>Overview Cost of Living </p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab offers an overview of the cost of living across different countries around the world.</p>", unsafe_allow_html=True)
 
+            # Create a container for the selection boxes
             selectWrapper = st.container()
             with selectWrapper:
-
+                
                 columns = st.columns(2)
 
                 with columns[0]:
@@ -259,13 +272,10 @@ with bodyContainer:
 
             dataframe = EXP.getLivingExpenses(year, region)
         
-
-
-            chart_type = "line"
             st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)")
-            st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=800)
+            st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=1250)
             
-        with exchaangespendigcalc:
+        with exchangeSpendingCalc:
             st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab offers a comparison of living costs for exchange students.</p>", unsafe_allow_html=True)
         # Add content for the Buying Power Overview tab here
@@ -275,25 +285,26 @@ with bodyContainer:
 
             with lefte:
                     st.write("Enter the information of your origin country")
-                    selectedRegioncalculatororigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
-                    year=2024
+                    selectedRegionCalculatorOrigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
+                    year = 2024
 
-                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()
-                    origin=st.selectbox("Please provide your Home-country",listofcountries)
+                    listofcountries = EXP.getLivingExpenses(year, selectedRegionCalculatorOrigin).iloc[1:,1].tolist()
+                    origin = st.selectbox("Please provide your Home-country",listofcountries)
+
             with righte:
                     st.write("Enter the information of your perfered destination")
                     selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
                     listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()
                     destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
-                    button=st.button("start calculation")
+                    button=st.button("Calculate")
 
             with lefte: 
                     with st.expander("Settings"):
-                        checkcalculator=st.radio("Choose your prevered setting", ["standard", "advanced"] )
+                        checkcalculator=st.radio("Choose your prefered setting", ["standard", "advanced"] )
                         if checkcalculator=="advanced":
                    # totalamount=int(st.number_input("Put in your total spendings"))
                             rentamount=int(st.number_input("Put in your rent spendings"))
-                            grocamount=int(st.number_input("Put in your groc spendings"))
+                            grocamount=int(st.number_input("Put in your groceries spendings"))
                             restaurantamount=int(st.number_input("Put in restaurant spendings"))
                             totalamount=rentamount+grocamount+restaurantamount
                             with righte:
@@ -301,7 +312,7 @@ with bodyContainer:
                                     if totalamount==0:
                                         st.write("Please Provide Amount")
                                     else:
-                                        ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
+                                        ESC.getcalculatorforexchange(selectedRegionCalculatorOrigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
                         if checkcalculator=="standard":
                             totalamount2=int(st.number_input("Put in your total spendings"))
                             with righte:
@@ -309,4 +320,4 @@ with bodyContainer:
                                     if totalamount2==0:
                                         st.write("Please Provide Amount")
                                     else:
-                                        ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
+                                        ESC.getcalculatorforexchangesimple(selectedRegionCalculatorOrigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
