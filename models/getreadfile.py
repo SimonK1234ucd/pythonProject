@@ -87,11 +87,3 @@ def getspecificdatedata(cur,date):
     exchangerate=reader.loc[date,cur]
 
     return exchangerate
-
-
-
-
-
-
-
-

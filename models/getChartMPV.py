@@ -30,7 +30,7 @@ def CountryPurchasingPower(selectedCountry):
         file_path = Path(__file__).parent.parent / "files" / "inflation_data.xlsx"
 
         #Reads the data from the file and assigns it to the variable file
-        file = pd.read_excel(file_path) # --> Returns a dataframe
+        file = pd.read_excel(file_path) # eturns a dataframe
         
 
         # Gets the data related the selected country
@@ -40,7 +40,7 @@ def CountryPurchasingPower(selectedCountry):
         if country.empty:
                 return st.error("Selected country not found in the data")
 
-        # Input format: [Year, Country, Value] -->  Output format: [Value1, Value2, Value3, ...]
+        # Input format: [Year, Country, Value]   Output format: [Value1, Value2, Value3]
         # country is a dataframe
         # iloc converts the dataframe to an array
 

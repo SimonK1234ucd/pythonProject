@@ -71,7 +71,7 @@ def display_currency_risk(cur, start_date):
         filtereddata['Pct_Change'] = filtereddata[cur].pct_change().abs().fillna(0) * 100
         
         # Calculate recent volatility
-        data['Pct_Change'] = data[cur].pct_change().fillna(0)
+        data['Pct_Change'] = data[cur].pct_change().tail(252).fillna(0)
         recent_daily_volatility = data['Pct_Change'].tail(252).std()
         recent_annual_volatility = recent_daily_volatility * (252 ** 0.5)
 
@@ -84,9 +84,9 @@ def display_currency_risk(cur, start_date):
         max_drawdown = filtereddata['Drawdown'].min() * 100
 
         # Calculate rest
-        mean_return = filtereddata['Pct_Change'].mean()
-        value_range = filtereddata[cur].max() - filtereddata[cur].min()
-        variance = filtereddata['Pct_Change'].var()
+        mean_return = filtereddata['Pct_Change'].tail(252).mean()
+        value_range = filtereddata[cur].tail().max() - filtereddata[cur].tail(252).min()
+        variance = filtereddata['Pct_Change'].tail(252).var()
 
         sharpe_ratio = mean_return / recent_daily_volatility if recent_daily_volatility != 0 else np.nan
 
