@@ -5,6 +5,16 @@ import streamlit as st
 
 def getcalculatorforexchange(selectedregion, selectedregion2, origin, destination, totalamount, restaraunt, rent, groc):
 
+    """
+    Determines the risk level of a currency based on its volatility.
+
+    Parameters:
+    volatility : float --> The annualized volatility of the currency.
+        
+    Returns:
+    tuple  --> A risk level ("Low", "Medium", or "High") and a descriptive message.
+    """
+
     year = 2024
     
     # Get data for the specified region
@@ -55,6 +65,18 @@ def getcalculatorforexchange(selectedregion, selectedregion2, origin, destinatio
     return table, returntext
 
 def getcalculatorforexchangesimple(selectedregion, selectedregion2, origin, destination, totalamount):
+
+    """
+    Analyzes and displays the risk level of a currency using historical data.
+
+    Parameters:
+    cur : str --> The currency code to analyze.
+    start_date : datetime.date --> The start date for filtering historical data.
+
+    Returns:
+    tuple --> Recent annual volatility (float) and the risk level (str).
+    """
+
     year = 2024
     
     # Get data for the specified region
