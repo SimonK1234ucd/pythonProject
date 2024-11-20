@@ -217,7 +217,7 @@ with bodyContainer:
 
             if country:
                 data3=getChartMPV.CountryPurchasingPower(country)#to get chart
-                st.write(f"Hisorical Money Purchasing Power of {country}: (Index scaled: 100 = 1970)")
+                st.write(f"Hisorical Money Value of {country}: (Index scaled: 100 = 1970)")
                
                 st.line_chart(data3.set_index("Year"))
             with historical:        

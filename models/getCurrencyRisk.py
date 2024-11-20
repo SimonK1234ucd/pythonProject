@@ -85,6 +85,7 @@ def display_currency_risk(cur, start_date):
 
         # Calculate rest
         mean_return = filtereddata['Pct_Change'].tail(252).mean()
+        annualmeanreturn = mean_return * 252
         value_range = filtereddata[cur].tail().max() - filtereddata[cur].tail(252).min()
         variance = filtereddata['Pct_Change'].tail(252).var()
 
