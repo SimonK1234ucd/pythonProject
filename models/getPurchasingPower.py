@@ -3,7 +3,7 @@ from pathlib import Path
 
 def getFuturePP(initial,average,years):
     """
-    Calculates the future buying power of an initial amount given an average inflation rate and number of years.
+    Calculates the future purchasing power of an initial amount given an average inflation rate and number of years.
 
     This function uses the formula:
         Future Buying Power = initial * (1 - (average / 100)) ** years
@@ -33,7 +33,9 @@ def getFuturePP(initial,average,years):
             
     else: 
         FutureBuying=initial*(1-(average/100))**years
-        forreturn=(f"The future buying power of {initial} is: {"{:.2f}".format(FutureBuying)}")#####NEED HELP HERE WHEN HIGH AMOUNT OUTPUT=0, IDK WHY
+        forreturn = ( #####NEED HELP HERE WHEN HIGH AMOUNT OUTPUT=0, IDK WHY
+             f"The future buying power of {initial} is: {"{:.2f}".format(FutureBuying)}"
+            )
         return forreturn
     
 def getHistoricalPPlist():

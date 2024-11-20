@@ -2,8 +2,7 @@ import models.getExpenseByIndex as EXP
 import pandas as pd
 import streamlit as st
 
-
-def getcalculatorforexchange(selectedregion, selectedregion2, origin, destination, totalamount, restaraunt, rent, groc):
+def getcalculatorforexchange(SelectedRegion_1, SelectedRegion_2, origin, destination, totalamount, restaraunt, rent, groc):
 
     """
     Determines the risk level of a currency based on its volatility.
@@ -18,17 +17,21 @@ def getcalculatorforexchange(selectedregion, selectedregion2, origin, destinatio
     year = 2024
     
     # Get data for the specified region
-    data = EXP.getLivingExpenses(year, selectedregion)
-    data2 = EXP.getLivingExpenses(year, selectedregion2)
+    firstRegionDataFrame = EXP.getLivingExpenses(year, SelectedRegion_1)
+    secondRegionDatFrame = EXP.getLivingExpenses(year, SelectedRegion_2)
     
     # Find row indices for origin and destination
-    originrow = data[data.iloc[:, 1] == origin]  
-    destinationrow = data2[data2.iloc[:, 1] == destination]
+    originrow = firstRegionDataFrame[firstRegionDataFrame.iloc[:, 1] == origin]  
+    destinationrow = secondRegionDatFrame[secondRegionDatFrame.iloc[:, 1] == destination]
 
     # to chech if there is an error
     if originrow.empty:
+        # throws an error if the origin is not found
         raise ValueError(f"Origin '{origin}' not found in the data.")
+    
+    # to chech if there is an error
     if destinationrow.empty:
+        # throws an error if the destination is not found
         raise ValueError(f"Destination '{destination}' not found in the data.")
 
     # Extract values from the each of the rows
