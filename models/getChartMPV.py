@@ -70,4 +70,3 @@ def CountryPurchasingPower(selectedCountry):
 
         return dataFrame
 
-print(CountryPurchasingPower("United States"))

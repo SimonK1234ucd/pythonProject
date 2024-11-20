@@ -9,7 +9,7 @@ import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
 from models.getreadfile import getAllCurrenciesComparedToEuro, getspecificdatedata, getcurrencychart
 from models.getCurrencyRisk import display_currency_risk
-from models.ExchangeSpending import display_spending_comparison
+#from models.ExchangeSpending import display_spending_comparison
 #import models.generateChart as gc
 import models.getExpenseByIndex as EXP
 import models.getExchangeCalculator as ESC
@@ -26,7 +26,7 @@ with headerContainer:
 
     with left:
         st.markdown("<h1 style='color:deepskyblue;'>Exchange Tool</h1>", unsafe_allow_html=True)
-        st.caption("This tool allows you to convert currencies and display exchange rates over time.")
+        st.caption("This tool enables you to convert currencies, access detailed statistics, explore cost of living information, and much more.")
 
     with right:
         st.image("https://i.ibb.co/vjMnKrv/forupload.png[/img][/url]", width=350)
@@ -78,9 +78,9 @@ with bodyContainer:
 
             # Filter data based on the selected threshold
             filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]
-
-            # Display the filtered and sorted bar chart
-            chart = st.line-ch(filteredData.sort_values(by=valueColumn, ascending=True), x="Currency", y=valueColumn, height=500)
+            st.write(f"This chart displays the exchange rate of the {selectedCur} against the listed currencies:")
+            sorted_data = filteredData.sort_values(by=valueColumn)
+            st.bar_chart(data=sorted_data,x="Currency",y=valueColumn,height=500)
             
                      
 
@@ -120,7 +120,7 @@ with bodyContainer:
             st.dataframe(df, width=1250)
 
 
-            st.caption(f"The bar chart displays the exchange rate of 1 {baseCurrency} of the base currency.")
+            st.write(f"The bar chart displays the exchange rate of the {baseCurrency} against the selected currencies.")
             st.bar_chart(df.set_index("Currency")["Exchange Rate"], height=250)
                  
         with currenciesHistoricallyTab:
@@ -166,7 +166,7 @@ with bodyContainer:
             chartplot = chartplot[chartplot.index >= start_date]
 
             # Display the historical chart
-            st.write(f"Historical Data of {curE} for the Selected Time Period ({date})")
+            st.write(f"Historical Data of the Exchange Rate of the {curE} against the EUR for the Selected Time Period ({date})")
             st.line_chart(chartplot, height=250)
             
             # Display currency risk assessment
@@ -216,13 +216,13 @@ with bodyContainer:
 
 
             if country:
-                data3=getChartMPV.CountryPurchasingPower(country)
-                st.write(f"Hisorical Money Purchasing Power of {country}: ")
-            
+                data3=getChartMPV.CountryPurchasingPower(country)#to get chart
+                st.write(f"Hisorical Money Purchasing Power of {country}: (Index scaled: 100 = 1970)")
+                
                 st.line_chart(data3.set_index("Year"))
             with historical:        
                 if checkb==True and initial:
-                    data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
+                    data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)#to get historical data 
                     st.info(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
             
 
@@ -263,11 +263,11 @@ with bodyContainer:
 
             chart_type = "line"
             st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)")
-            st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=800)
+            st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=1400)
             
         with exchaangespendigcalc:
             st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
-            st.markdown("<p style='font-size:14px'>This tab offers a comparison of living costs for exchange students.</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size:14px'>This tab provides a comparison of living costs for exchange students. Simply enter your spending from your home country, and it will calculate the equivalent amount needed to afford the same products and services in your chosen destination.</p>", unsafe_allow_html=True)
         # Add content for the Buying Power Overview tab here
             tabs=st.columns(2)
             lefte=tabs[0]

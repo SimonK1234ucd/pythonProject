@@ -97,6 +97,7 @@ def display_currency_risk(cur, start_date):
             "Metric": ["Start-Date", "Most Recent Annual Volatility", "Maximum Drawdown", "Mean % Change", "Range", "Variance", "Sharpe Ratio"],
             "Value": [start_date.date(),f"{recent_annual_volatility:.2f}%",f"{max_drawdown:.2f}%",f"{mean_return:.2f}%",f"{value_range:.2f}",f"{variance:.2f}",f"{sharpe_ratio:.2f}" if not np.isnan(sharpe_ratio) else "N/A" ]})
         with links:
+            st.caption("The table shows statitics of the last year:")
             st.table(risk_data)
         st.info(risk_message)
 
@@ -106,6 +107,7 @@ def display_currency_risk(cur, start_date):
 
         with rechts:
             if 'index' in forchart.columns:
+                st.caption("The chart plots the daily changes in the currency Exchange Rate against the EUR:")
                 st.line_chart(forchart.set_index('index')['Pct_Change'], height=300)
             else:
                 st.error("The 'index' column is missing after reset_index().")
