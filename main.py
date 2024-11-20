@@ -14,7 +14,6 @@ from models.ExchangeSpending import display_spending_comparison
 import models.getExpenseByIndex as EXP
 import models.getExchangeCalculator as ESC
 
-
 # Set the page configuration
 st.set_page_config(layout="wide", page_title="Exchange Tool", page_icon="https://seeklogo.com/images/U/university-college-dublin-logo-3AFABC5D8E-seeklogo.com.png")
 
@@ -30,10 +29,10 @@ with headerContainer:
         st.caption("This tool allows you to convert currencies and display exchange rates over time.")
 
     with right:
-        #st.image("https://seeklogo.com/images/U/university-college-dublin-logo-3AFABC5D8E-seeklogo.com.png", width=50)
         st.image("https://i.ibb.co/vjMnKrv/forupload.png[/img][/url]", width=350)
 
 bodyContainer = st.container()
+
 with bodyContainer:
     [currencyInformation, CostofLiving] = st.tabs(["Currency Information","Cost of Living" ])
 
@@ -52,14 +51,8 @@ with bodyContainer:
         with currenOverviewTab:
             st.markdown("<p style='font-weight:bold'>Overview of Currencies</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>The Currency Overview displays the Exchange Rate of a selected currency compared to other currencies.</p>", unsafe_allow_html=True)
-
-            # Settings Expander    
-            wrapper = st.container()
-            
-            
+   
             [left,empty,empty2, right] = st.columns(4)
-
-            
 
             with right:
                 selectedCur = st.selectbox("Select Currency", currencyTypes)
@@ -69,7 +62,7 @@ with bodyContainer:
                 currencyList = getCurrencies.getSpecificCurrency(selectedCur)
                 
                 # Convert the currency list to a sorted list of tuples (currency, value)
-                sorted_currency_data = sorted(currencyList.items(), key=lambda item: item[1])#here grabbing items, lamda for every item second value (exchange rates)
+                sorted_currency_data = sorted(currencyList.items(), key=lambda item: item[1]) #here grabbing items, lamda for every item second value (exchange rates)
                 
                 # Extract values to calculate thresholds
                 values = [value for currency, value in sorted_currency_data]
@@ -328,6 +321,3 @@ with bodyContainer:
                                         st.write("Please Provide Amount")
                                     else:
                                         ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
-                                    
-
-       
