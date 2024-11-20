@@ -49,12 +49,8 @@ with bodyContainer:
     # Currency Information Section
     with currencyInformation:
         # Sub-tabs for various currency-related tools
-        tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Purchasing Power Calculator"])
-        currenOverviewTab = tabs[0]
-        compareCurrenciesTab = tabs[1]
-        currenciesHistoricallyTab = tabs[2]
-        purchasingPowerTab = tabs[3]
-        
+        [currenOverviewTab, compareCurrenciesTab, currenciesHistoricallyTab, purchasingPowerTab] = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Purchasing Power Calculator"])
+         
         # Fetch all available currency types
         currencyTypes = getCurrencies.getCurrencyTypes().keys()
 
