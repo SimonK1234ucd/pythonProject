@@ -36,6 +36,7 @@ def getCurrencyTypes():
     
         url = "https://api.exchangerate-api.com/v4/latest/EUR"
         data = FetchDataFromAPI(url)
+        # format of data: {'rates' : {'USD' : 1.2, 'EUR' : 1.0, 'JPY' : 0.8 etc...}, 'base' : 'EUR', 'date' : '2021-01-01'}
         currencies = data["rates"]
     
         #Returns a list of dictionariess with currency codes and their values e.g. USED : 1, EUR : 0.8 etc...
