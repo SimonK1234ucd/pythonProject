@@ -194,7 +194,7 @@ with bodyContainer:
             st.markdown("<p style='font-weight:bold'>Purchasing Power Calculator</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the purchasing power of a selected currency.</p>", unsafe_allow_html=True)
         
-            #check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
+            check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
             check = None
             
             if check=="Future Purchasing Power":
@@ -237,7 +237,8 @@ with bodyContainer:
                     data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
                     st.success(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
             
-    with purchasingPowerTab:
+
+    with CostofLiving:
             # Changs this to a more correct labelling :)
         tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator"])
         Costofliv = tabs[0]
