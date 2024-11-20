@@ -5,6 +5,21 @@ from models.getreadfile import getcurrencychart
 from datetime import date
 
 def assess_risk_level(volatility):
+    """
+    Assesses the risk level of a currency based on its volatility.
+
+    Parameters:
+    ----------
+    volatility : float
+        The annualized volatility of the currency (percentage).
+
+    Returns:
+    -------
+    tuple
+        A tuple containing:
+        - str: The risk level ("Low", "Medium", or "High").
+    """
+
     if volatility < 1:
         return "Low", "Low Volatility: The currency is relatively stable."
     elif 1 <= volatility < 3:
@@ -14,6 +29,26 @@ def assess_risk_level(volatility):
 
 # Function to assess the currency risk and return the visuals
 def display_currency_risk(cur, start_date):
+
+    """
+    Gets the currency risk for a given currency based on historical data and displays key metrics.
+
+    Parameters:
+    ----------
+    cur : str
+        The currency code (e.g., "USD", "EUR") to analyze.
+    start_date : datetime.date
+        The start date for filtering the historical data.
+
+    Returns:
+    -------
+    tuple
+        A tuple containing:
+        - float: The most recent annual volatility of the currency (percentage).
+        - str: The risk level ("Low", "Medium", or "High").
+
+    """
+
     try:
         # Get historical data for the selected currency
         data = getcurrencychart(cur)

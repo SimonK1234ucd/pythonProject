@@ -4,6 +4,7 @@ import streamlit as st
 
 
 def getcalculatorforexchange(selectedregion, selectedregion2, origin, destination, totalamount, restaraunt, rent, groc):
+
     year = 2024
     
     # Get data for the specified region

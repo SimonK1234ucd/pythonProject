@@ -45,35 +45,33 @@ with bodyContainer:
         currenciesHistoricallyTab = tabs[2]
         purchasingPowerTab = tabs[3]
         
-        currencyTypes = getCurrencies.getCurrencyTypes().keys() #because of keys just the KEYs is global defined
+        # Get the keys the currency types, which are the abbreviations of the currencies e.g. USD, EUR, JPY etc...
+        currencyTypes = getCurrencies.getCurrencyTypes().keys() 
 
-    # Add content for the Currency Overview tab here
+        # Add content for the Currency Overview tab here
         with currenOverviewTab:
             st.markdown("<p style='font-weight:bold'>Overview of Currencies</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>The Currency Overview displays the Exchange Rate of a selected currency compared to other currencies.</p>", unsafe_allow_html=True)
    
-            [left,empty,empty2, right] = st.columns(4)
+            #A dropdown for selecting the currency
+            selectedCur = st.selectbox("Select Currency", currencyTypes)
 
-            with right:
-                selectedCur = st.selectbox("Select Currency", currencyTypes)
-                sort= st.radio("Sort by Exchange Rate", ("Ascending", "Descending"))
+            # Fetch currency list for selected currency
+            currencyList = getCurrencies.getSpecificCurrency(selectedCur)
+            
+            # Convert the currency list to a sorted list of tuples (currency, value)
+            sorted_currency_data = sorted(currencyList.items(), key=lambda item: item[1])
+        
+            # Extract values to calculate thresholds
+            values = [value for currency, value in sorted_currency_data]
+            median = pd.Series(values).median()
+            minValue= 1
+            maxValue= median +50
 
-                # Fetch currency list for selected currency
-                currencyList = getCurrencies.getSpecificCurrency(selectedCur)
+            threshold =(minValue, maxValue)
                 
-                # Convert the currency list to a sorted list of tuples (currency, value)
-                sorted_currency_data = sorted(currencyList.items(), key=lambda item: item[1]) #here grabbing items, lamda for every item second value (exchange rates)
-                
-                # Extract values to calculate thresholds
-                values = [value for currency, value in sorted_currency_data]
-                median = pd.Series(values).median()
-                minValue= 1
-                maxValue= median +50
-
-                threshold =(minValue, maxValue)
-                
-
-            valueColumn = f"Exchange Rate "
+            # Create a bar chart for the selected currency
+            valueColumn = f"Exchange Rate"
 
             # Convert sorted list to a DataFrame
             dataForChart = pd.DataFrame(sorted_currency_data, columns=["Currency", valueColumn])
@@ -81,18 +79,10 @@ with bodyContainer:
             # Filter data based on the selected threshold
             filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]
 
-            # Sort data based on the selected sort order
-            ascending_order = True if sort == "Ascending" else False
-            filteredData = filteredData.sort_values(by=valueColumn, ascending=ascending_order)
-
             # Display the filtered and sorted bar chart
-            with left:
-                     chart = alt.Chart(filteredData).mark_bar().encode(
-                     x=alt.X("Currency", sort=None),
-                     y=valueColumn
-                     ).properties(height=600,width =900)
-
-                     st.altair_chart(chart)
+            chart = st.line-ch(filteredData.sort_values(by=valueColumn, ascending=True), x="Currency", y=valueColumn, height=500)
+            
+                     
 
         with compareCurrenciesTab:
             st.markdown("<p style='font-weight:bold'>Currency Converter</p>", unsafe_allow_html=True)
@@ -246,7 +236,6 @@ with bodyContainer:
         with CoLOverview:
             st.markdown("<p style='font-weight:bold'>Overview Cost of Living </p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab offers an overview of the cost of living across different countries around the world.</p>", unsafe_allow_html=True)
-            #display_spending_comparison()
 
             selectWrapper = st.container()
             with selectWrapper:
