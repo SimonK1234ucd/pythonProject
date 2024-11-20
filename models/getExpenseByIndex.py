@@ -3,6 +3,43 @@ import pandas as pd
 import requests
 
 def getLivingExpenses(year, region=None):
+    """
+    Scrapes and retrieves the cost of living rankings by country for a specified year and region.
+
+    This function fetches cost of living data from the Numbeo website and parses it into a pandas
+    DataFrame. If a region is specified, the function filters the data for that region; otherwise,
+    it retrieves global rankings for the specified year.
+
+    Parameters:
+        year (int): The year for which to retrieve the cost of living data (e.g., 2024).
+        region (str, optional): The region to filter the data. Must be one of the following:
+            - "America"
+            - "Europe"
+            - "Asia"
+            - "Africa"
+            - "Oceania"
+            If not provided, global rankings are returned.
+
+    Returns:
+        pandas.DataFrame: A DataFrame containing the cost of living data with columns such as:
+            - "Rank"
+            - "Country"
+            - "Cost of Living Index"
+            - "Rent Index"
+            - "Cost of Living Plus Rent Index"
+            - "Groceries Index"
+            - "Restaurant Price Index"
+            - "Local Purchasing Power Index"
+        If the data retrieval or parsing fails, the function prints an error message and returns None.
+
+    Raises:
+        requests.exceptions.RequestException: If the HTTP request fails.
+        ValueError: If an invalid region is provided.
+    
+    Example:
+        >>> df = getLivingExpenses(2024, region="Europe")
+        >>> print(df.head())
+    """
     # Values are indexed relative to New York City (NYC) as the base city
 
     # Grabbed the region codes from the website to use in the URL
