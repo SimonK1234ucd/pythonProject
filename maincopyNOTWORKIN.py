@@ -7,11 +7,12 @@ import altair as alt
 import models.getChartMPV as getChartMPV
 import models.getreadfile as getreadfile
 import models.getPurchasingPower as getPurchasingPower
-from models.getreadfile import getcurrencylistE, getspecificdatedata, getcurrencychart
+from models.getreadfile import getAllCurrenciesComparedToEuro, getspecificdatedata, getcurrencychart
 from models.getCurrencyRisk import display_currency_risk
 from models.ExchangeSpending import display_spending_comparison
-import models.generateChart as gc
+#import models.generateChart as gc
 import models.getExpenseByIndex as EXP
+import models.getExchangeCalculator as ESC
 
 
 # Set the page configuration
@@ -132,7 +133,7 @@ with bodyContainer:
 
             # Create a DataFrame from the rows
             df = pd.DataFrame(rows, columns=headers)
-            st.dataframe(df, width=800)
+            st.dataframe(df, width=1250)
 
 
             st.caption(f"The bar chart displays the exchange rate of 1 {baseCurrency} of the base currency.")
@@ -145,7 +146,7 @@ with bodyContainer:
             st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
             # Get the list of currencies
-            currencylistE=getreadfile.getcurrencylistE()
+            currencylistE=getreadfile.getAllCurrenciesComparedToEuro()
 
             # Create two columns for side-by-side selection boxes
             col1, col2 = st.columns(2)
@@ -187,7 +188,7 @@ with bodyContainer:
             
             # Display currency risk assessment
             st.markdown("<p style='font-weight:bold; font-size:22px'>Currency Risk Assessment:</p>", unsafe_allow_html=True)
-            display_currency_risk(curE, start_date)
+            display_currency_risk(curE,start_date)
 
         with purchasingPowerTab:
 
@@ -195,7 +196,7 @@ with bodyContainer:
             st.markdown("<p style='font-weight:bold'>Purchasing Power Calculator</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the purchasing power of a selected currency.</p>", unsafe_allow_html=True)
         
-            #check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
+            check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
             check = None
             
             if check=="Future Purchasing Power":
@@ -238,16 +239,16 @@ with bodyContainer:
                     data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
                     st.success(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
             
-        with CostofLiving:
+    with CostofLiving:
             # Changs this to a more correct labelling :)
-            tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator", "BEER"])
-            Costofliv = tabs[0]
-            exchaangespendigcalc = tabs[1]
-            beerTab= tabs[2]
+        tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator"])
+        OverviewCoL = tabs[0]
+        exchaangespendigcalc = tabs[1]
+         
 
 
             # Add content for the Living expenses tab here
-            with Costofliv:
+        with OverviewCoL:
                 st.markdown("<p style='font-weight:bold'>Overview Cost of Living </p>", unsafe_allow_html=True)
                 st.markdown("<p style='font-size:14px'>This tab offers an overview of the cost of living across different countries around the world.</p>", unsafe_allow_html=True)
                 #display_spending_comparison()
@@ -280,16 +281,58 @@ with bodyContainer:
                 st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)")
                 st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=800)
                 
-            with exchaangespendigcalc:
+        with exchaangespendigcalc:
                 st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
                 st.markdown("<p style='font-size:14px'>This tab offers a comparison of living costs for exchange students.</p>", unsafe_allow_html=True)
             # Add content for the Buying Power Overview tab here
-            
-            with beerTab:
+                tabs=st.columns(2)
+                left=tabs[0]
+                right=tabs[1]
 
-                st.markdown("<p style='font-weight:bold'>BEER</p>", unsafe_allow_html=True)
+                with left:
+                    st.write("Enter the information of your origin country")
+                    selectedRegioncalculatororigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
+                    year=2024
 
-                # Add content for the Buying Power Overview tab here
+                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()
+                    origin=st.selectbox("Please provide your Home-country",listofcountries)
+                with right:
+                    st.write("Enter the information of your perfered destination")
+                    selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
+                    listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()
+                    destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
+                    button=st.button("start calculation")
+
+                with left: 
+                    with st.expander("Settings"):
+                        checkcalculator=st.radio("Choose your prevered setting", ["standard", "advanced"] )
+                        if checkcalculator=="advanced":
+                   # totalamount=int(st.number_input("Put in your total spendings"))
+                            rentamount=int(st.number_input("Put in your rent spendings"))
+                            grocamount=int(st.number_input("Put in your groc spendings"))
+                            restaurantamount=int(st.number_input("Put in rent total spendings"))
+                            totalamount=rentamount+grocamount+restaurantamount
+                            with right:
+                                if button:
+                                    if totalamount==0:
+                                        st.write("Please Provide Amount")
+                                    else:
+                                        ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
+                        if checkcalculator=="standard":
+                            totalamount2=int(st.number_input("Put in your total spendings"))
+                            with right:
+                                if button:
+                                    if totalamount2==0:
+                                        st.write("Please Provide Amount")
+                                    else:
+                                        ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
+                                    
+
+
+"""
+
+
+              
                     
     with currencyInformation:
             
@@ -333,7 +376,7 @@ with bodyContainer:
                             years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY)")
 
                     if country:
-                        data3=getChartMPV.getchartforMPW(country)
+                        data3=getChartMPV.CountryPurchasingPower(country)
                         st.write(f"Hisorical Money Purchasing Power of {country}: ")
                         st.line_chart(data3.set_index("Year"))
                     
@@ -346,7 +389,7 @@ with bodyContainer:
                     st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
                     # Get the list of currencies
-                    currencylistE=getreadfile.getcurrencylistE()
+                    currencylistE=getreadfile.getAllCurrenciesComparedToEuro()
 
                     # Create two columns for side-by-side selection boxes
                     col1, col2 = st.columns(2)
@@ -387,4 +430,4 @@ with bodyContainer:
                     st.line_chart(chartplot)
                     # Display currency risk assessment
                     # st.markdown("<p style='font-weight:bold; font-size:22px'>Currency Risk Assessment:</p>", unsafe_allow_html=True)
-                    # display_currency_risk(curE, start_date)
+                    # display_currency_risk(curE, start_date)"""
