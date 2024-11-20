@@ -56,14 +56,14 @@ with bodyContainer:
             # Settings Expander    
             wrapper = st.container()
             
-            with wrapper:
-                [left, right] = st.columns(2)
+            
+            [left,empty,empty2, right] = st.columns(4)
 
-                with left:
-                    selectedCur = st.selectbox("Select Currency", currencyTypes)
+            
 
-                with right:
-                    sort= st.radio("Sort by Exchange Rate", ("Ascending", "Descending"))
+            with right:
+                selectedCur = st.selectbox("Select Currency", currencyTypes)
+                sort= st.radio("Sort by Exchange Rate", ("Ascending", "Descending"))
 
                 # Fetch currency list for selected currency
                 currencyList = getCurrencies.getSpecificCurrency(selectedCur)
@@ -93,12 +93,13 @@ with bodyContainer:
             filteredData = filteredData.sort_values(by=valueColumn, ascending=ascending_order)
 
             # Display the filtered and sorted bar chart
-            chart = alt.Chart(filteredData).mark_bar().encode(
-                x=alt.X("Currency", sort=None),
-                y=valueColumn
-            ).properties(height=600, width =1200)
+            with left:
+                     chart = alt.Chart(filteredData).mark_bar().encode(
+                     x=alt.X("Currency", sort=None),
+                     y=valueColumn
+                     ).properties(height=600,width =900)
 
-            st.altair_chart(chart)
+                     st.altair_chart(chart)
 
         with compareCurrenciesTab:
             st.markdown("<p style='font-weight:bold'>Currency Converter</p>", unsafe_allow_html=True)
@@ -194,18 +195,21 @@ with bodyContainer:
             st.markdown("<p style='font-weight:bold'>Purchasing Power Calculator</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the purchasing power of a selected currency.</p>", unsafe_allow_html=True)
         
-            check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
+            #check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
+            [historical,future]=st.columns(2)
+            with future:
+                st.write("Future Purchasing Power Calulator")
+            #if check=="Future Purchasing Power":
+                with st.expander("Settings"):
+                    initial=st.number_input("Provide Initial Amount in EUR")
+                    average=st.number_input("Provide Average Inflation Rate in %  (max. 20%)")
+                    years=st.number_input("Provide Amount of Years  (max. 100)")
+                if years and initial and average!=0:
+                    forprint=getPurchasingPower.getFuturePP(initial,average,years)
+                    st.info(forprint)
             
-            
-            if check=="Future Purchasing Power":
-                initial=st.number_input("Provide Initial Amount in EUR")
-                average=st.number_input("Provide Average Inflation Rate in %  (max. 20%)")
-                years=st.number_input("Provide Amount of Years  (max. 100)")
-
-                forprint=getPurchasingPower.getFuturePP(initial,average,years)
-                st.write(forprint)
-            
-            if check=="Historical Purchasing Power":
+            with historical:
+                st.write("Historical Purchasing Power Calulator")
                 with st.expander("Settings"):
                     listcountrys=[]
                     listcountrys=getPurchasingPower.getHistoricalPPlist()
@@ -228,14 +232,15 @@ with bodyContainer:
                             st.error("Please enter a valid year in the format YYYY.")
 
 
-                if country:
-                    data3=getChartMPV.CountryPurchasingPower(country)
-                    st.write(f"Hisorical Money Purchasing Power of {country}: ")
-                    st.line_chart(data3.set_index("Year"))
-                
+            if country:
+                data3=getChartMPV.CountryPurchasingPower(country)
+                st.write(f"Hisorical Money Purchasing Power of {country}: ")
+            
+                st.line_chart(data3.set_index("Year"))
+            with historical:        
                 if checkb==True and initial:
                     data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)
-                    st.success(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
+                    st.info(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
             
 
     with CostofLiving:
