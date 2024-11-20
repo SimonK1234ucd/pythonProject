@@ -312,7 +312,7 @@ with bodyContainer:
                    # totalamount=int(st.number_input("Put in your total spendings"))
                             rentamount=int(st.number_input("Put in your rent spendings"))
                             grocamount=int(st.number_input("Put in your groc spendings"))
-                            restaurantamount=int(st.number_input("Put in rent total spendings"))
+                            restaurantamount=int(st.number_input("Put in restaurant spendings"))
                             totalamount=rentamount+grocamount+restaurantamount
                             with righte:
                                 if button:
