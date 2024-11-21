@@ -67,8 +67,8 @@ with bodyContainer:
             sorted_currency_data = sorted(currencyList.items(), key=lambda item: item[1])
         
             # Extract values to calculate thresholds
-            values = list(map(lambda item: item[1], sorted_currency_data))
-            median = pd.Series(values).median()
+            values = list(map(lambda item: item[1], sorted_currency_data)) # declares as list, by mapping each tuplet to the second value of the tuple, which is the value of the currency
+            median = pd.Series(values).median() # Gets the median to set the threshold accordingly
             minValue= 1
             maxValue= median +50
 
@@ -87,109 +87,120 @@ with bodyContainer:
             st.bar_chart(data=sorted_data,x="Currency",y=valueColumn,height=500)
             
                      
-
+        # Add content for the Compare Currencies tab here
         with compareCurrenciesTab:
             st.markdown("<p style='font-weight:bold'>Currency Converter</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>The Currency Converter transforms a selected currency into other specified currencies.</p>", unsafe_allow_html=True)
 
+            # Create two columns for side-by-side selection boxes
             [left, right] = st.columns(2)        
             #get the base currency and then create the currenylist for this currency
             
+
             with left:
+                # In the left column, we create a selection box for the base currency
                 baseCurrency = st.selectbox("Select Base currency",currencyTypes) # e.g. EUR
 
             with right:
+                # Default amount is 1
                 amount=1
-                amountinput = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency#   %d-> user only can put in whole values 1,2,3,
-                if amountinput<=0:
+                # In the right column, we create a number input for the amount of the base currency
+                amountInput = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency#   %d-> user only can put in whole values 1,2,3,
+                if amountInput <= 0:
                     st.error("Please provide amount bigger than 0")
                 else:
-                    amount=amountinput
+                    amount = amountInput
                 
-            #select here the currency the user like to convert to 
-
+            #select here the currency the user like to convert to             
+            allCurrencies = getCurrencies.getSpecificCurrency(baseCurrency) #gets the other currencies in relation to the selected currency (basecurrency)
             
-            allCurrencies =getCurrencies.getSpecificCurrency(baseCurrency) #gets the whole data for a selected currency (basecurrency)
-            selectedCurrencies= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)
+            selectedCurrencies= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)  #Multiselect to include multiple currencies to compare to
+
             st.caption("The exchange rates are displayed in current time and are subject to change.")
 
-
+            # Empy list for the rows, which will be used to create the DataFrame
             rows = []
+            # Defining the headers for the table
             headers = ["Base Currency Value", "Currency", "Exchange Rate", "Amount Exchanged"] #for table headers
 
-            #calculates for the selectesCurrencies the follwing values (for loop by going through the allcurrencie data for the selected currencies)
+            # We iterate over the selected currencies and calculate the amount exchanged for each currency
             for currency in selectedCurrencies:
-                selectedAmountExchangeRated = amount * allCurrencies[currency]
-                selectedAmountBaseCurrency = f"{amount} {baseCurrency}"
-                exchangeRateForSingleBaseCurrency = allCurrencies[currency]
+                
+                selectedAmountExchangeRated = amount * allCurrencies[currency] #calculating the amount exchanged
+                selectedAmountBaseCurrency = f"{amount} {baseCurrency}" # generates a string of the amount and the base currency (to clearly display the amount)
+                exchangeRateForSingleBaseCurrency = allCurrencies[currency] # gets the single exchange rate for the selected currency
 
                 rows.append([selectedAmountBaseCurrency, currency, exchangeRateForSingleBaseCurrency, selectedAmountExchangeRated])#adding these values to the rows list
 
             # Create a DataFrame from the rows
-            df = pd.DataFrame(rows, columns=headers)#create dataframe for table
-            st.dataframe(df, width=1250)#create table
+            df = pd.DataFrame(rows, columns=headers) #create dataframe for table
+            
+            # Display the table and the bar chart
+            st.dataframe(df, width=1250) #create table
+            st.caption("The table displays the amount of the base currency exchanged to the selected currencies.") # Short caption to explain the table
 
-
-            st.write(f"The bar chart displays the exchange rate of the {baseCurrency} against the selected currencies.")
             st.bar_chart(df.set_index("Currency")["Exchange Rate"], height=250)
+            st.caption(f"The bar chart displays the exchange rate of the {baseCurrency} against the selected currencies.") # Short caption to explain the chart
                  
-        with currenciesHistoricallyTab:
+            
+        with currenciesHistoricallyTab: # Everything in the Historical Exchange Rates tab
 
             st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
             # Get the list of all the currencies against the euro
-            currencylistE=getreadfile.getAllCurrenciesComparedToEuro()
+            currencylistE = getreadfile.getAllCurrenciesComparedToEuro()
 
             # Create two columns for side-by-side selection boxes
-            col1, col2 = st.columns(2)
+            [left, right] = st.columns(2)
 
-            # Box for selecting currency
-            with col1:
-                curE = st.selectbox("Select Currency to Compare", currencylistE, key = "tab2a")
+            with left:
+                curE = st.selectbox("Select Currency to Compare", currencylistE, key = "tab2a") # Selected currency for the comparison
 
-            # Dropdown for selecting time period (in the second column)
-            time_periods = ["YTD", "1 year", "2 years", "3 years", "5 years", "10 years", "20 years"]
-            with col2:
-                date = st.selectbox("Select Time Period", time_periods, key = "time_period") 
+            time_periods = ["YTD", "1 year", "2 years", "3 years", "5 years", "10 years", "20 years"] # List of available time periods
+
+            with right:
+                selectedDate = st.selectbox("Select Time Period", time_periods, key = "time_period")  # Dropdown for selecting time period
             
             # Set the current date
             current_date = pd.to_datetime("2024-11-13")
 
-            # Determine the start date based on the selected time period(create the timefraems)
-            periods = {#dictionary of start dates
-                "YTD": current_date.replace(month=1, day=1),#first day year
-                "1 year": current_date - pd.DateOffset(years=1),#current date -1 year
+            
+            periods = { # Dictionary of start dates, where the key is the time period and the value is the start date
+                "YTD": current_date.replace(month = 1, day = 1), # Replaces the month and day of the current date with 1, to get the beginning of the year (YTD)
+                "1 year": current_date - pd.DateOffset(years=1), # current date -1 year
                 "2 years": current_date - pd.DateOffset(years=2),
                 "3 years": current_date - pd.DateOffset(years=3),
                 "5 years": current_date - pd.DateOffset(years=5),
                 "10 years": current_date - pd.DateOffset(years=10),
                 "20 years": current_date - pd.DateOffset(years=20),
             }
-            start_date = periods.get(date, current_date) #when selection of timeframe matches on period in dictionary, this one gets returned (default=current date)
+            # Defines start date as 
+            start_date = periods.get(selectedDate, current_date) #when selection of timeframe matches on period in dictionary, this one gets returned (default=current date)
 
-            
             # Get the historical chart data for the selected currency
             chartplot = getcurrencychart(curE)
 
             # Filter the data based on the selected time period
-            chartplot = chartplot[chartplot.index >= start_date]#This filters the DataFrame chartplot by selecting only the rows where the index satisfies the condition.
+            chartplot = chartplot[chartplot.index >= start_date] # This filters the DataFrame chartplot by selecting only the rows where the index satisfies the condition.
 
-            # Display the historical chart
-            st.write(f"Historical Data of the Exchange Rate of the {curE} against the EUR for the Selected Time Period ({date})")
+            # Short caption to explain the chart
+            st.write(f"Historical Data of the Exchange Rate of the {curE} against the EUR for the Selected Time Period ({selectedDate})")
+            
+            #Plots the chart as a line chart
             st.line_chart(chartplot, height=250)
             
             # Display currency risk assessment
             st.markdown("<p style='font-weight:bold; font-size:22px'>Currency Risk Assessment:</p>", unsafe_allow_html=True)
-            display_currency_risk(curE,start_date)
+            display_currency_risk(curE,start_date) # Calls the display_risk_function that returns a chart of the currency risk
 
         with purchasingPowerTab:
 
             st.markdown("<p style='font-weight:bold'>Purchasing Power Calculator</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the purchasing power of a selected currency.</p>", unsafe_allow_html=True)
         
-            #check=st.radio("Select checkbox:", ["Historical Purchasing Power", "Future Purchasing Power"])
-            [historical,future]=st.columns(2)
+            [historical,future] = st.columns(2)
+            
             with future:
                 st.write("Future Purchasing Power Calulator")
             #if check=="Future Purchasing Power":

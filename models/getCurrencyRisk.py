@@ -123,9 +123,8 @@ def display_currency_risk(cur, start_date):
         [links, rechts] = st.columns(2)
 
         # Display key metrics in a table in the left column
-        risk_data = pd.DataFrame({
-            "Metric": ["Start-Date", "Most Recent Annual Volatility", "Maximum Drawdown", 
-                       "Mean % Change", "Range", "Variance", "Sharpe Ratio"],
+        risk_data = pd.DataFrame({# Creates a dataframe with the metrics and their values
+            "Metric": ["Start-Date", "Most Recent Annual Volatility", "Maximum Drawdown", "Mean % Change", "Range", "Variance", "Sharpe Ratio"],
             "Value": [
                 start_date.date(),
                 f"{recent_annual_volatility:.2f}%", 
