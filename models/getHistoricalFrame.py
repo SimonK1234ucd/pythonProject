@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import requests
 
+# COMPLETED ALL COMMNETS
 
 def gettimeframe(currency1,currency2):
     """
@@ -39,23 +40,23 @@ def gettimeframe(currency1,currency2):
         # 2024-10-11         0.96
         # ...
     """
-
+    # API Key should probably be in the environment variables, but not a part of this course 
     key="d6f3714af7452487c54e61a84a08dff4"
+    # Base URL for the ForexRateAPI
     base=f"https://api.forexrateapi.com/v1/timeframe"
 
-    startdate="2024-10-10"
-    enddate="2024-10-15"
+    # Sets up the start and end date for the historical data
+    startDate="2024-10-10"
+    endDate="2024-10-15"
 
-    #IMPORTANT TO UNDERSTAND
+    
     # Alters the URL to include the API key, the start date, end date, base currency and the currency to be converted to
-    request_url = f"{base}?api_key={key}&start_date={startdate}&end_date={enddate}&base={currency1}&currencies={currency2}"
+    request_url = f"{base}?api_key={key}&start_date={startDate}&end_date={endDate}&base={currency1}&currencies={currency2}"
 
-    #IMPORTANT TO UNDERSTAND
     # Gets the data from the API, like when you access pinterest.com and get the images :)
     response = requests.get(request_url)
 
-
-    if response.status_code == 200: #if code=200, it works well
+    if response.status_code == 200: #if code=200, the request was a success
 
         # Formats the data into json format: e.g. {country_code : "DK", country_name : "Denmark"}
         data = response.json()
@@ -68,16 +69,20 @@ def gettimeframe(currency1,currency2):
         exchangerate = {date: rates[date][currency2] for date in rates}
 
         
-        #IMPORTANT TO UNDERSTAND
-        forchart = pd.DataFrame(list(exchangerate.items()), columns=["Date", "Exchange Rate"]) # expected output: {date: [exchange rate1, exchange rate2, exchange rate3, ...]}
+        # initializes the dataframe
+        forchart = pd.DataFrame(
+            list(exchangerate.items()), #Takes each item in the dictionary and creates a list of tuples [(date, exchange rate), (date, exchange rate), ...]
+            columns=["Date", "Exchange Rate"]) # defines the columns as "Date" and "Exchange Rate"
 
-        
+        # forchart --> "dataForTheChart" ensures that the date values of the dataframe are in datetime format
         forchart["Date"] = pd.to_datetime(forchart["Date"], errors='coerce')#fucking annoying because streamlit is dumb
-        #chart=st.line_chart(forchart.set_index("Date"))
+        
 
+        # Returns the dataframe
         return forchart
 
-    else:
+    
+    else: # if the request was unsuccessful
         # Defines the error
         error1 = st.write("Error", response.status_code)
         # Returns the error instead :)

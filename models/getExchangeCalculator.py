@@ -2,16 +2,25 @@ import models.getExpenseByIndex as EXP
 import pandas as pd
 import streamlit as st
 
+# COMPLETED COMMENTS
+
 def getcalculatorforexchange(SelectedRegion_1, SelectedRegion_2, origin, destination, totalamount, restaraunt, rent, groc):
 
     """
-    Determines the risk level of a currency based on its volatility.
+    Calculates and compares the cost of living between two regions based on spending categories.
 
     Parameters:
-    volatility : float --> The annualized volatility of the currency.
-        
+    - SelectedRegion_1 (str): The origin region to analyze.
+    - SelectedRegion_2 (str): The destination region to analyze.
+    - origin (str): City or location in the origin region.
+    - destination (str): City or location in the destination region.
+    - totalamount (float): Total amount spent in the origin.
+    - restaraunt (float): Restaurant spending in the origin.
+    - rent (float): Rent spending in the origin.
+    - groc (float): Grocery spending in the origin.
+
     Returns:
-    tuple  --> A risk level ("Low", "Medium", or "High") and a descriptive message.
+    - tuple: A Streamlit table displaying spending comparisons and a success/error/info message.
     """
 
     year = 2024
@@ -61,37 +70,45 @@ def getcalculatorforexchange(SelectedRegion_1, SelectedRegion_2, origin, destina
         destination: [newtotalamount, newrentamount, newgrocamount, newrestarauntamount]
     })
 
-    #
+    # Creates a streamlite table to display the data
     table = st.table(dataframe)
+    # Compares the total amount of the origin and destination and returns a message
     if totalamount>newtotalamount:
-        returntext=st.success(f"{destination} is cheaper than {origin}")
+        returntext = st.success(f"{destination} is cheaper than {origin}")
     elif totalamount<newtotalamount:
-        returntext=st.error(f"{destination} is more expensive than {origin}")
+        returntext = st.error(f"{destination} is more expensive than {origin}")
     else:
-        returntext=st.info(f"{destination} is as expesive as {origin}")
+        returntext = st.info(f"{destination} is as expesive as {origin}")
+    
+    #Returns the table and the message
     return table, returntext
 
 def getcalculatorforexchangesimple(selectedregion, selectedregion2, origin, destination, totalamount):
 
     """
-    Analyzes and displays the risk level of a currency using historical data.
+    Calculates and compares the overall cost of living between two regions for total spending.
 
     Parameters:
-    cur : str --> The currency code to analyze.
-    start_date : datetime.date --> The start date for filtering historical data.
+    - selectedregion (str): The origin region to analyze.
+    - selectedregion2 (str): The destination region to analyze.
+    - origin (str): City or location in the origin region.
+    - destination (str): City or location in the destination region.
+    - totalamount (float): Total amount spent in the origin.
 
     Returns:
-    tuple --> Recent annual volatility (float) and the risk level (str).
+    - tuple: A Streamlit table displaying the total spending comparison and a success/error/info message.
     """
 
     year = 2024
     
-    # Get data for the specified region
+    # Get index data for the specified regions
     data = EXP.getLivingExpenses(year, selectedregion)
     data2 = EXP.getLivingExpenses(year, selectedregion2)
     
     # Find row indices for origin and destination
+        # Gets all the rows of the second column
     originrow = data[data.iloc[:, 1] == origin]  
+        # Gets all the rows of the second column
     destinationrow = data2[data2.iloc[:, 1] == destination]
 
     # to chech if there is an error
@@ -100,24 +117,31 @@ def getcalculatorforexchangesimple(selectedregion, selectedregion2, origin, dest
     if destinationrow.empty:
         raise ValueError(f"Destination '{destination}' not found in the data.")
 
-    # Extract values from the each of the rows
-    totalindex = float(originrow.iloc[0, 2])  
-    
-    totalindex2 = float(destinationrow.iloc[0, 2])  
+    # Gets the first row of column 2, which translates to the overall index for the origin and destination
 
+    totalindex = float(originrow.iloc[0, 2])  # origin
+    totalindex2 = float(destinationrow.iloc[0, 2])  # destination
+
+    # Calculates the new total amount based on the total index of the origin and destination
     newtotalamount = (totalamount * (1 / totalindex)) * totalindex2
-
-    returndata = pd.DataFrame({
+    
+    # Initializes a dateframe, with the spending categories and the amounts and corresponding values:
+    dateframe = pd.DataFrame({
         "Kind of spending": ["Total-Amount"],
         origin: [totalamount],
         destination: [newtotalamount]
     })
 
-    table = st.table(returndata)
+    # Creates a streamlite table to display the data
+    table = st.table(dateframe)
+
+    # Compares the total amount of the origin and destination and returns a message
     if totalamount>newtotalamount:
         returntext=st.success(f"{destination} is cheaper than {origin}")
     elif totalamount<newtotalamount:
         returntext=st.error(f"{destination} is more expensive than {origin}")
     else:
         returntext=st.info(f"{destination} is as expesive as {origin}")
+
+    #Returns the table and the message
     return table, returntext
