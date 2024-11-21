@@ -121,10 +121,10 @@ with bodyContainer:
                 
             #select here the currency the user like to convert to             
             allCurrencies = getCurrencies.getSpecificCurrency(baseCurrency) #gets the other currencies in relation to the selected currency (basecurrency)
-            
+            st.caption("The exchange rates are displayed in real-time and are subject to change.")
             selectedCurrencies= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)  #Multiselect to include multiple currencies to compare to
 
-            st.caption("The exchange rates are displayed in current time and are subject to change.")
+            
 
             # Empy list for the rows, which will be used to create the DataFrame
             rows = []
@@ -144,11 +144,12 @@ with bodyContainer:
             df = pd.DataFrame(rows, columns=headers) #create dataframe for table
             
             # Display the table and the bar chart
-            st.dataframe(df, width=1250) #create table
             st.caption("The table displays the amount of the base currency exchanged to the selected currencies.") # Short caption to explain the table
-
-            st.bar_chart(df.set_index("Currency")["Exchange Rate"], height=250)
+            st.dataframe(df, width=1250) #create table
+            
             st.caption(f"The bar chart displays the exchange rate of the {baseCurrency} against the selected currencies.") # Short caption to explain the chart
+            st.bar_chart(df.set_index("Currency")["Exchange Rate"], height=250)
+            
                  
             
         with currenciesHistoricallyTab: # Everything in the Historical Exchange Rates tab
