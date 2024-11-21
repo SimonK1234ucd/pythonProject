@@ -1,6 +1,7 @@
-
-# Request is an external module, that allows you to make request to a server and get a response back, a.k.a an API :).
 import requests
+
+# COMPLETED COMMENTS
+
 def FetchDataFromAPI(url):
 
     """
@@ -40,11 +41,16 @@ def getSpecificCurrency(cur):
     Returns: 
         list: A list of dictionaries with currency codes and their values e.g. USED : 1, EUR : 0.8 etc...
     """
-
+    # Print statement to ensure the correct currency is being checked (for admin purposes)
     print("Checking the currency types", cur)
 
+    # Formats the URL:
     url = "https://api.exchangerate-api.com/v4/latest/" + cur
+    
+    # Runs the API request "handler" function to get the data
     data = FetchDataFromAPI(url)
+
+    # Grabs the rates key from the data to get the currency values of each currency compared to the selected currency
     currencies = data["rates"]
 
     #Returns a list of dictionariess with currency codes and their values e.g. USED : 1, EUR : 0.8 etc...
@@ -63,11 +69,15 @@ def getCurrencyTypes():
         currencies: A list of dictionaries with currency codes and their values e.g. USED : 1, EUR : 0.8 etc...
 
     """
-
+    # Print statement to ensure the correct currency is being checked (for admin purposes)
     print("Checking the currency types")
 
+    # Formats the URL, we've decied the EUR is the base currency, because we're in ireland...
     url = "https://api.exchangerate-api.com/v4/latest/EUR"
+    
+    # Runs the API request "handler" function to get the data
     data = FetchDataFromAPI(url)
+
     # format of data: {'rates' : {'USD' : 1.2, 'EUR' : 1.0, 'JPY' : 0.8 etc...}, 'base' : 'EUR', 'date' : '2021-01-01'}
     currencies = data["rates"]
 

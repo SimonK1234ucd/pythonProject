@@ -34,31 +34,35 @@ def getcalculatorforexchange(SelectedRegion_1, SelectedRegion_2, origin, destina
         # throws an error if the destination is not found
         raise ValueError(f"Destination '{destination}' not found in the data.")
 
-    # Extract values from the each of the rows
-    totalindex = float(originrow.iloc[0, 2])  
+    # Gets the first row of column 2, 3, 4 and 5 which translates to the total index, rent index, grocery index and restaurant index
+    totalindex = float(originrow.iloc[0, 2])
     rentindex = float(originrow.iloc[0, 3])  
     grocindex = float(originrow.iloc[0, 4]) 
     restarauntindex = float(originrow.iloc[0, 5])  
 
+    # Dos the same as above but for the selected destination 
     totalindex2 = float(destinationrow.iloc[0, 2])  
     rentindex2 = float(destinationrow.iloc[0, 3])  
     grocindex2 = float(destinationrow.iloc[0, 4])  
     restarauntindex2 = float(destinationrow.iloc[0, 5])  
 
-  
+    # Calcuates the new amount for each of the spending categories
     newtotalamount = (totalamount * (1 / totalindex)) * totalindex2
     newrentamount = (rent * (1 / rentindex)) * rentindex2
     newgrocamount = (groc * (1 / grocindex)) * grocindex2
     newrestarauntamount = (restaraunt * (1 / restarauntindex)) * restarauntindex2
 
-
-    returndata = pd.DataFrame({
+    # Creates a dataframe to display the data with the spending categories and the amounts and corresponding values:
+        # Total-Amount, Rent-Amount, Grocery-Amount, Restaurant Amount
+        # Origin, Destination
+    dataframe = pd.DataFrame({
         "Kind of spending": ["Total-Amount", "Rent-Amount", "Grocery-Amount", "Restaurant Amount"],
         origin: [totalamount, rent, groc, restaraunt],
         destination: [newtotalamount, newrentamount, newgrocamount, newrestarauntamount]
     })
 
-    table = st.table(returndata)
+    #
+    table = st.table(dataframe)
     if totalamount>newtotalamount:
         returntext=st.success(f"{destination} is cheaper than {origin}")
     elif totalamount<newtotalamount:
