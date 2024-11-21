@@ -83,8 +83,16 @@ with bodyContainer:
             # Filter data based on the selected threshold
             filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]# select the date where the value of dataforchart is in given threshold
             st.write(f"This chart displays the exchange rate of the {selectedCur} against the listed currencies:")
-            sorted_data = filteredData.sort_values(by=valueColumn)
-            st.bar_chart(data=sorted_data,x="Currency",y=valueColumn,height=500)
+            sorted_data = filteredData.sort_values(by = valueColumn)
+
+            # In order to display the bar chart as sorted we need to use another library called altair
+                # Mark_bar() creates a bar chart
+            st.altair_chart(alt.Chart(sorted_data).mark_bar().encode( # Creates a bar chart with the sorted data
+                x = alt.X("Currency", sort=None), # X-axis label for the currency
+                y = valueColumn # Y-axis label for the exchange rate
+                # Tooltip for the currency and exchange rate
+            ), use_container_width=True)
+            
             
                      
         # Add content for the Compare Currencies tab here
@@ -320,7 +328,7 @@ with bodyContainer:
                     selectedRegioncalculatororigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
                     year=2024
 
-                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
+                    listofcountries = EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
                     origin=st.selectbox("Please provide your Home-country",listofcountries)
             with right:
                     st.write("Enter the information of your perfered destination")
@@ -339,11 +347,11 @@ with bodyContainer:
             with left: 
                     if checkcalculator == "advanced": # Given the user selects the advanced option
         
-                        rentInput = int(st.number_input("Put in your rent spendings")) #user input of amount which gets checked if they are negativ
+                        rentInput = int(st.number_input("Put in your monthly rent")) #user input of amount which gets checked if they are negativ
                         
-                        groceryInput = int(st.number_input("Put in your groc spendings")) #user input of amount which gets checked if they are negativ
+                        groceryInput = int(st.number_input("Put in your momthly grocery spendings")) #user input of amount which gets checked if they are negativ
                         
-                        restaurantInput = int(st.number_input("Put in restaurant spendings")) #user input of amount which gets checked if they are negativ
+                        restaurantInput = int(st.number_input("Put in momthly restaurant spendings")) #user input of amount which gets checked if they are negativ
                         
                         # Checks if the any of the users input is negative
                         if rentInput < 0 or restaurantInput < 0 or groceryInput < 0:
