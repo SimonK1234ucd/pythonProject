@@ -149,27 +149,27 @@ with bodyContainer:
             with col2:
                 date = st.selectbox("Select Time Period", time_periods, key = "time_period") 
             
-            # Set the current date explicitly for testing or real usage
+            # Set the current date
             current_date = pd.to_datetime("2024-11-13")
 
-            # Determine the start date based on the selected time period
-            periods = {
-                "YTD": current_date.replace(month=1, day=1),
-                "1 year": current_date - pd.DateOffset(years=1),
+            # Determine the start date based on the selected time period(create the timefraems)
+            periods = {#dictionary of start dates
+                "YTD": current_date.replace(month=1, day=1),#first day year
+                "1 year": current_date - pd.DateOffset(years=1),#current date -1 year
                 "2 years": current_date - pd.DateOffset(years=2),
                 "3 years": current_date - pd.DateOffset(years=3),
                 "5 years": current_date - pd.DateOffset(years=5),
                 "10 years": current_date - pd.DateOffset(years=10),
                 "20 years": current_date - pd.DateOffset(years=20),
             }
-            start_date = periods.get(date, current_date)
+            start_date = periods.get(date, current_date) #when selection of timeframe matches on period in dictionary, this one gets returned (default=current date)
 
             
             # Get the historical chart data for the selected currency
             chartplot = getcurrencychart(curE)
 
             # Filter the data based on the selected time period
-            chartplot = chartplot[chartplot.index >= start_date]
+            chartplot = chartplot[chartplot.index >= start_date]#This filters the DataFrame chartplot by selecting only the rows where the index satisfies the condition.
 
             # Display the historical chart
             st.write(f"Historical Data of the Exchange Rate of the {curE} against the EUR for the Selected Time Period ({date})")
@@ -191,6 +191,7 @@ with bodyContainer:
             #if check=="Future Purchasing Power":
                 with st.expander("Settings"):
                     
+                    #provide and error-test initial input
                     initial=0
                     initialinput=st.number_input("Provide Initial Amount in EUR")
                     if initialinput<0:
@@ -198,6 +199,7 @@ with bodyContainer:
                     else:
                         initial=initialinput
 
+                    #provide and error-test inflation input
                     average=0
                     inflationinput=st.number_input("Provide Average Inflation Rate in %  (max. +/- 20%)")
                     if inflationinput<-20 or inflationinput>20:
@@ -205,6 +207,7 @@ with bodyContainer:
                     else:
                         average=inflationinput
 
+                    #provide and error-test year input
                     years=0
                     yearsinput=st.number_input("Provide Amount of Years  (max. 100)")
                     if yearsinput<0:
@@ -213,7 +216,7 @@ with bodyContainer:
                         years=yearsinput
 
                 if years and initial and average!=0:
-                    forprint=getPurchasingPower.getFuturePP(initial,average,years)
+                    forprint=getPurchasingPower.getFuturePP(initial,average,years)#gets the future Purchasing Power ready to print
                     st.info(forprint)
 
             
@@ -221,9 +224,10 @@ with bodyContainer:
                 st.write("Historical Purchasing Power Calulator")
                 with st.expander("Settings"):
                     listcountrys=[]
-                    listcountrys=getPurchasingPower.getHistoricalPPlist()
+                    listcountrys=getPurchasingPower.getHistoricalPPlist()#gets a list of all the countries available to calculate the historical PP
                     country=st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
                     
+                    #provide inital amount and errror check it 
                     initialinput=st.number_input("Provide Amount today")
                     if initialinput and initialinput<0:
                         st.error("Please provide amount bigger than 0")
@@ -232,7 +236,7 @@ with bodyContainer:
                     years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY) (Range: 1970-2023)")
                     
                     #year format check
-                    checkb=False
+                    checkb=False#create check-variable to modufy during the check
                     if years:
                         try:
                             checka=int(years)
@@ -250,7 +254,7 @@ with bodyContainer:
                 data3=getChartMPV.CountryPurchasingPower(country)#to get chart
                 st.write(f"Hisorical Money Value of {country}: (Index scaled: 100 = 1970)")
                
-                st.line_chart(data3.set_index("Year"))
+                st.line_chart(data3.set_index("Year"))#data3.set_index("Year") converts Year column in index – ensures using Year as x-Achsi 
             with historical:        
                 if checkb==True and initial:
                     data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)#to get historical data 
@@ -309,14 +313,15 @@ with bodyContainer:
                     selectedRegioncalculatororigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
                     year=2024
 
-                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()
+                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
                     origin=st.selectbox("Please provide your Home-country",listofcountries)
             with righte:
                     st.write("Enter the information of your perfered destination")
                     selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
-                    listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()
+                    listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
                     destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
-                    button=st.button("start calculation")
+                    
+                    button=st.button("start calculation")#to start calculation after putting in all inputs
 
             with lefte: 
                     with st.expander("Settings"):
