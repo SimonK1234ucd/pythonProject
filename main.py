@@ -201,44 +201,13 @@ with bodyContainer:
         
             [historical,future] = st.columns(2)
 
-            with future:
-                st.write("Future Purchasing Power Calulator")
-            
-                with st.expander("Future PPC Configuration"): #
-                    
-                    #provide and error-test initial input
-                    initial=0
-                    initialinput=st.number_input("Provide Initial Amount in EUR")
-                    if initialinput<0:
-                        st.error("Please provide initial input bigger than 0")
-                    else:
-                        initial=initialinput
-
-                    #provide and error-test inflation input
-                    average=0
-                    inflationinput=st.number_input("Provide Average Inflation Rate in %  (max. +/- 20%)")
-                    if inflationinput<-20 or inflationinput>20:
-                        st.error("Please provide initial input in given range ")
-                    else:
-                        average=inflationinput
-
-                    #provide and error-test year input
-                    years=0
-                    yearsinput=st.number_input("Provide Amount of Years  (max. 100)")
-                    if yearsinput<0:
-                        st.error("Please provide initial input bigger than 0")
-                    else:
-                        years=yearsinput
-
-                if years and initial and average!=0:
-                    forprint=getPurchasingPower.getFuturePP(initial,average,years)#gets the future Purchasing Power ready to print
-                    st.info(forprint)
-
-            
+            # ––––– HISTORICAL COLUMN –––––
             with historical:
                 st.write("Historical Purchasing Power Calulator") # Small title for the historical Purchasing Power Calculator
+                historicalExpander = st.expander("Historical PPC Configuration", expanded=True) # Expander to hide the configuration options
 
-                with st.expander("Historical PPC Configuration"): # Declare an expander to hide the configuration options
+                
+                with historicalExpander: # Declare an expander to hide the configuration options
 
                     listcountrys = getPurchasingPower.getHistoricalPPlist() # Calls getHistoricalPPlist to get the list of available countries
                     country = st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b") #Populates a selection box with the retrieved contries
@@ -273,6 +242,40 @@ with bodyContainer:
                 elif initialinput == 0: # Error check for the initial amount is zero
                     st.info("Please provide an amount in order to proceed")
 
+            # –––– FUTURE COLUMN ––––
+            with future:
+                st.write("Future Purchasing Power Calulator")
+                futureExpander = st.expander("Future PPC Configuration", expanded=True)
+
+                with futureExpander: 
+                    
+                    #provide and error-test initial input
+                    initial = 0
+                    initialinput= st.number_input("Provide Initial Amount in EUR")
+                    if initialinput<0:
+                        st.error("Please provide initial input bigger than 0")
+                    else:
+                        initial=initialinput
+
+                    #provide and error-test inflation input
+                    average=0
+                    inflationinput=st.number_input("Provide Average Inflation Rate in %  (max. +/- 20%)")
+                    if inflationinput<-20 or inflationinput>20:
+                        st.error("Please provide initial input in given range ")
+                    else:
+                        average=inflationinput
+
+                    #provide and error-test year input
+                    years=0
+                    yearsinput=st.number_input("Provide Amount of Years  (max. 100)")
+                    if yearsinput<0:
+                        st.error("Please provide initial input bigger than 0")
+                    else:
+                        years=yearsinput
+
+                if years and initial and average!=0:
+                    forprint=getPurchasingPower.getFuturePP(initial,average,years)#gets the future Purchasing Power ready to print
+                    st.info(forprint)
                 
             
 
