@@ -201,11 +201,41 @@ with bodyContainer:
         
             [historical,future] = st.columns(2)
 
+            # –––– FUTURE COLUMN ––––
+            with future:
+                st.write("Future Purchasing Power Calulator")
+                futureExpander = st.expander("Future PPC Configuration", expanded=True)
+
+                with futureExpander: # Declare an expander to hide the configuration options
+                    
+                    initialInput= float(st.number_input("Provide Initial Amount in EUR")) # User input for the initial amount in EUR, makes sure it is a float
+                    if initialInput < 0: # Error check for the initial amount is less than zero aka. negative...
+                        st.error("Please provide initial input bigger than 0")
+                    
+                    #provide and error-test inflation input
+                    average = 0
+
+                    inflationInput = int(st.number_input("Provide Average Inflation Rate in %  (max. +/- 20%)")) # User input for the average inflation rate as a percentage, but only allows values between -20 and 20
+
+                    if inflationInput <- 20 or inflationInput > 20:
+                        st.error("Please provide initial input in given range ")
+                    else:
+                        average = inflationInput
+
+                    #provide and error-test year input
+                    futureAvailableYears = sorted([str(year) for year in range(2024, 2124)], reverse = False) # A loop with a range of years from 2024 to 2124, which is then sorted in ascending order
+                    selectedFutureYear = st.selectbox("Please Select the year of your interest:", futureAvailableYears, key="tab3d") # Selection box for the year of interest
+                    yearsDiff = int(selectedFutureYear) - 2024 # Calculates the difference between the selected year and 2024
+
+                if yearsDiff and initialInput and average != 0:
+                    calculationStatement= getPurchasingPower.getFuturePP(initialInput, average, yearsDiff)#gets the future Purchasing Power ready to print
+                    st.info(calculationStatement) # Prints the calculation statement as an info message
+
+
             # ––––– HISTORICAL COLUMN –––––
             with historical:
                 st.write("Historical Purchasing Power Calulator") # Small title for the historical Purchasing Power Calculator
                 historicalExpander = st.expander("Historical PPC Configuration", expanded=True) # Expander to hide the configuration options
-
                 
                 with historicalExpander: # Declare an expander to hide the configuration options
 
@@ -228,57 +258,19 @@ with bodyContainer:
 
                     if years is None: # Error check for the year is None
                         st.error("Please select a year") # Error message if the year is None
-
-                    data3 = getChartMPV.CountryPurchasingPower(country) # Retrieves a dataframe from the CountryPurchasingPower function from the getChartMPV module
-                    st.write(f"Hisorical Money Value of {country}: (Index scaled: 100 = 1970)")
-
-                # Indented back to the same level as the with historical: to ensure the chart is displayed in the same column as the historical Purchasing Power Calculator               
-                st.line_chart(data3.set_index("Year"))#data3.set_index("Year") converts Year column in index – ensures using Year as x-Achsi 
-   
-                data3b = getPurchasingPower.getHistorialPPdata(country, years, initialinput) #to get historical data 
-                
-                if initialinput != 0:
-                    st.info(f"The Purchasing Power of {"{:.2f}".format(initialinput)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
-                elif initialinput == 0: # Error check for the initial amount is zero
-                    st.info("Please provide an amount in order to proceed")
-
-            # –––– FUTURE COLUMN ––––
-            with future:
-                st.write("Future Purchasing Power Calulator")
-                futureExpander = st.expander("Future PPC Configuration", expanded=True)
-
-                with futureExpander: 
-                    
-                    #provide and error-test initial input
-                    initial = 0
-                    initialinput= st.number_input("Provide Initial Amount in EUR")
-                    if initialinput<0:
-                        st.error("Please provide initial input bigger than 0")
-                    else:
-                        initial=initialinput
-
-                    #provide and error-test inflation input
-                    average=0
-                    inflationinput=st.number_input("Provide Average Inflation Rate in %  (max. +/- 20%)")
-                    if inflationinput<-20 or inflationinput>20:
-                        st.error("Please provide initial input in given range ")
-                    else:
-                        average=inflationinput
-
-                    #provide and error-test year input
-                    years=0
-                    yearsinput=st.number_input("Provide Amount of Years  (max. 100)")
-                    if yearsinput<0:
-                        st.error("Please provide initial input bigger than 0")
-                    else:
-                        years=yearsinput
-
-                if years and initial and average!=0:
-                    forprint=getPurchasingPower.getFuturePP(initial,average,years)#gets the future Purchasing Power ready to print
-                    st.info(forprint)
-                
             
+                    data3b = getPurchasingPower.getHistorialPPdata(country, years, initialinput) #to get historical data     
 
+                    if initialinput != 0:
+                        st.info(f"The Purchasing Power of {"{:.2f}".format(initialinput)} today is equal to {"{:.2f}".format(data3b)} in {years}")      
+                    
+        with purchasingPowerTab: # With the Purchasing Power tab in order to place graph in the bottom of the page outside of the columns.
+                data3 = getChartMPV.CountryPurchasingPower(country) # Retrieves a dataframe from the CountryPurchasingPower function from the getChartMPV module
+                st.write(f"Hisorical Money Value of {country}: (Index scaled: 100 = 1970)") # Title for the historical money value chart
+                st.line_chart(data3.set_index("Year"))#data3.set_index("Year") converts Year column in index – ensures using Year as x-axis
+            
+            
+                
     with CostofLiving:
             # Changs this to a more correct labelling :)
         tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator"])
