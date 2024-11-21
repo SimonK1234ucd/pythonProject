@@ -335,28 +335,29 @@ with bodyContainer:
                     selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
                     listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
                     destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
-                    
+
                     button=st.button("start calculation")#to start calculation after putting in all inputs
 
             with lefte: 
                     with st.expander("Settings"):
+                        #standard is just total amount, advanced is specified
                         checkcalculator=st.radio("Choose your prevered setting", ["standard", "advanced"] )
                         if checkcalculator=="advanced":
-                   # totalamount=int(st.number_input("Put in your total spendings"))
+                            #user input of amount which gets checked if they are negativ
                             rentamountinput=int(st.number_input("Put in your rent spendings"))
                             rentamount=0
                             if rentamountinput<0:
                                 st.error("Please provide initial input bigger than 0")
                             else:
                                 rentamount=rentamountinput
-                            
+                            #user input of amount which gets checked if they are negativ
                             grocamountinput=int(st.number_input("Put in your groc spendings"))
                             grocamount=0
                             if grocamountinput<0:
                                 st.error("Please provide initial input bigger than 0")
                             else:
                                 grocamount=grocamountinput
-                            
+                            #user input of amount which gets checked if they are negativ
                             restaurantamountinput=int(st.number_input("Put in restaurant spendings"))
                             restaurantamount=0
                             if restaurantamountinput<0:
@@ -371,10 +372,12 @@ with bodyContainer:
                                     if totalamount==0:
                                         st.write("Please Provide Amount")
                                     else:
+                                        #returns a table with the initial and exchanged amount of each category (by calling function instantly printed in streamlit)
                                         ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
                         if checkcalculator=="standard":
                             totalamount2input=int(st.number_input("Put in your total spendings"))
                             totalamount2=0
+                            #user input of amount which gets checked if they are negativ
                             if totalamount2input<0:
                                 st.error("Please provide initial input bigger than 0")
                             else:
@@ -382,4 +385,5 @@ with bodyContainer:
 
                             with righte:
                                 if button and totalamount2!=0:
+                                    #returns a table with the initial and exchanged amount for total spending (by calling function instantly printed in streamlit)
                                     ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
