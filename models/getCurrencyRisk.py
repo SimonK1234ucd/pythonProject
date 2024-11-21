@@ -20,11 +20,16 @@ def assess_risk_level(volatility):
         - str: The risk level ("Low", "Medium", or "High").
     """
 
-    if volatility < 1:
-        return "Low", "Low Volatility: The currency is relatively stable."
-    elif 1 <= volatility < 3:
+    # A simple if statement, that returns a status report based on the volatility
+
+    if volatility < 1: # if the volatility is less than 1, the currency is considered stable
+        
+        return "Low", "Low Volatility: The currency is relatively stable."    
+    elif 1 <= volatility < 3: # if the volatility is between 1 and 3, the currency is considered to have moderate fluctuations
+        
         return "Medium", "Medium Volatility: The currency has moderate fluctuations."
-    else:
+    else: # if the volatility is greater than 3, the currency is considered to have significant fluctuations
+        
         return "High", "High Volatility: Significant fluctuations may occur."
 
 # Function to assess the currency risk and return the visuals
@@ -48,14 +53,18 @@ def display_currency_risk(cur, start_date):
         - str: The risk level ("Low", "Medium", or "High").
 
     """
-
+    # Try statement to handle exceptions/errors accordingly
     try:
         # Get historical data for the selected currency
         data = getcurrencychart(cur)
+        # Check if data is available
         if data is None or data.empty:
+
+            # Display error message if no data is available
             st.error("No data available for the selected currency.")
             return None, None
 
+        # Ensure the index is a datetime object
         data.index = pd.to_datetime(data.index)  # Ensure datetime index
 
         # Filter and calculate stats

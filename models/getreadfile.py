@@ -1,6 +1,8 @@
 import pandas as pd
 from pathlib import Path
 
+# COMPLETED COMMENTS
+
 def getAllCurrenciesComparedToEuro():
     """
      Retrieves a list of all currencies compared to the Euro from the historical data file.
@@ -49,19 +51,38 @@ def getcurrencychart(cur):
     """
 
 
-    file_path= Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
-    reader= pd.read_csv(file_path)
+    if type (cur) != str or cur == "":
+        try:
+            str(cur) # Tries to convert the currency code to a string
+        except ValueError:
+            return "Please enter a valid currency code"
+    
+    cur.upper() # Converts the currency code to uppercase
 
-    curdata=[]
-    curdata=reader.loc[:,cur]
+    # Gets the path of the file: eurohistoricaldata.csv
+    file_path = Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
+    
+    reader = pd.read_csv(file_path) # Initializes a dataframe of the retrieved file using pandas
 
-    date=[]
-    date=reader.iloc[:,0]
-    date=pd.to_datetime(date)
+    # Retrieves all the rows from the specified currency column
+        # Loc method, is a away to access a column/row in a dataframe by label (column e.g. name/currency/code)
+    currencyData = reader.loc[:,cur]
 
-    forchartE=pd.DataFrame({'Date': date,cur: curdata}).set_index('Date') #IMPORTANT to Understand
+    # Retrievs all rows from the first column of the dataframe and converts them to datetime
+        # iloc, aka. the integerLocation is a way to access a column/row in a dataframe by index values
+    date = reader.iloc[:,0]
+    
+    #Updates the date variable to a datetime object
+    date = pd.to_datetime(date)
 
-    return forchartE
+    #Creates the final dataframe with the date and currency data
+    dateFrame = pd.DataFrame({
+        'Date' : date, 
+        cur : currencyData}
+    ).set_index('Date') 
+
+    #Returns the final dataframe that consists of the columns: Date and the specified currency
+    return dateFrame
 
 def getspecificdatedata(cur,date):
     """
@@ -81,12 +102,19 @@ def getspecificdatedata(cur,date):
     Raises:
         KeyError: If the specified date or currency is not found in the data.
     """
+    # Gets the path of the file: eurohistoricaldata.csv
+    file_path= Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv" 
 
-    file_path= Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
+    #Initializes a dataframe of the retrieved file using pandas
     reader= pd.read_csv(file_path)
     
-    reader.set_index(reader.columns[0], inplace=True) #IMPORTANT to understand
+    #Sets the date column as the index, aka. the first column
+        # Inplace = True, means that the changes are made directly to the dataframe
+    reader.set_index(reader.columns[0], inplace=True) 
      
-    exchangerate=reader.loc[date,cur]
+    # Tries to retrieve the exchange rate for the specified currency and date
+        # row: provided date: column: provided currency
+    exchangerate = reader.loc[date, cur]
 
+    # Returns the exchange rate for the specified currency and date
     return exchangerate

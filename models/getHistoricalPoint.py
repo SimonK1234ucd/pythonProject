@@ -1,6 +1,7 @@
 import requests
 import streamlit as st
 
+# COMPLETED COMMENTS 
 
 def getspecificdate(date,currency1,currency2):
     """
@@ -26,21 +27,30 @@ def getspecificdate(date,currency1,currency2):
         - Requires an API key to access the ForexRateAPI.
         - Ensure the API key and URL are valid and active.
     """
-                
+    # API key (supposed to be environemnt, but not a part of the course learnings :))
     key="d6f3714af7452487c54e61a84a08dff4"
+
+    #URL for api formatted with the date parameter 
     base=f"https://api.forexrateapi.com/v1/{date}"
-            
+    
+    # Setup complete url with the base, key and the currencies for the request.
     request_url = f"{base}?api_key={key}&base={currency1}&currencies={currency2}"
+    
+    #Initialize and retrieve the response:
     response = requests.get(request_url)
 
+    #Checks if the response was successful
     if response.status_code == 200: #if code=200, it works well
-                    
+                    # converts the response to json
                     data = response.json()
-                    #st.write("200")
-
+                    
+                    #Grabs the value or the rates key and the currency2 key for the values of the compared currency
                     exchangerate = data["rates"][currency2]
-                    exchangerate = "{:.2f}".format(exchangerate)
-                    return  exchangerate
+                    
+                    # Returns string: formatted to two decimal places
+                    return  "{:.2f}".format(exchangerate)
 
-    else:
+    else: # if request was not successful, it returns the error message with the status code
+                    
+                    # Returns string: error message with status code
                     return st.write("Error", response.status_code)

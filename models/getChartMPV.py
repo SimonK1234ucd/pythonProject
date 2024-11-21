@@ -2,8 +2,8 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 
+# COMPLETED COMMENTS
 
-# This function illustrates the evolution of the money purchasing power of a country
 def CountryPurchasingPower(selectedCountry):
 
         """

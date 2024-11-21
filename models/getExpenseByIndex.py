@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 
+#COMPLETED ALL COMMENTS
+
 def getLivingExpenses(year, region=None):
     """
     Scrapes and retrieves the cost of living rankings by country for a specified year and region.
@@ -36,14 +38,11 @@ def getLivingExpenses(year, region=None):
         requests.exceptions.RequestException: If the HTTP request fails.
         ValueError: If an invalid region is provided.
     
-    Example:
-        >>> df = getLivingExpenses(2024, region="Europe")
-        >>> print(df.head())
     """
     # Values are indexed relative to New York City (NYC) as the base city
 
     # Grabbed the region codes from the website to use in the URL
-    regions = {
+    availableRegions = {
         "America" : "019",
         "Europe" : "150",
         "Asia" : "142",
@@ -54,7 +53,7 @@ def getLivingExpenses(year, region=None):
     # checks if region is provided when calling the function
     if region:
         # If region is provided, the URL is set to the region code
-        url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}&region={regions[region]}"
+        url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}&region={availableRegions[region]}"
     else:
         # If region is not provided, the URL is set to the year
         url = f"https://www.numbeo.com/cost-of-living/rankings_by_country.jsp?title={year}"    
@@ -69,9 +68,11 @@ def getLivingExpenses(year, region=None):
     
     # Parses the response text with BeautifulSoup
     # BeautifulSoup is a library that makes it easy to scrape information from web pages
+
+    # The response.text is the HTML content of the page and "html.parser" is the parser used to parse the content (means to read the content)
     soup = BeautifulSoup(response.text, "html.parser")
     
-    # Locate table with id 't2'
+    # Locate table with id 't2' because that is the table, that contains the data we want and is consistent on the page
     table = soup.find("table", {"id": "t2"})
     
     # if the table does not exist, return with print statement
@@ -113,5 +114,5 @@ def getLivingExpenses(year, region=None):
     # Printss a summerized version of the dataframe
     #print("Returning, DataFrame:", dataframe.count())
 
-    # Retunrs the actual dataframe in standard format
+    # Returns the actual dataframe in standard format
     return dataframe

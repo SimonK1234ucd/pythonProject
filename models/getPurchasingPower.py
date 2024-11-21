@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-# Completed All Details... @Otto
+# COMPLETED COMMENTS
 
 def getFuturePP(initial, average, years):
     """
