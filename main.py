@@ -95,7 +95,13 @@ with bodyContainer:
                 baseCurrency = st.selectbox("Select Base currency",currencyTypes) # e.g. EUR
 
             with right:
-                amount = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency
+                amount=1
+                amountinput = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency
+                if amountinput<=0:
+                    st.error("Please provide amount bigger than 0")
+                else:
+                    amount=amountinput
+                
             #select here the currency the user like to convert to 
 
 
@@ -105,7 +111,7 @@ with bodyContainer:
 
 
             rows = []
-            headers = ["Base Currency", "Currency", "Exchange Rate", "Amount Exchanged"]
+            headers = ["Base Currency Value", "Currency", "Exchange Rate", "Amount Exchanged"]
 
             
             for currency in selectedCurrencies:
@@ -184,12 +190,32 @@ with bodyContainer:
                 st.write("Future Purchasing Power Calulator")
             #if check=="Future Purchasing Power":
                 with st.expander("Settings"):
-                    initial=st.number_input("Provide Initial Amount in EUR")
-                    average=st.number_input("Provide Average Inflation Rate in %  (max. 20%)")
-                    years=st.number_input("Provide Amount of Years  (max. 100)")
+                    
+                    initial=0
+                    initialinput=st.number_input("Provide Initial Amount in EUR")
+                    if initialinput<0:
+                        st.error("Please provide initial input bigger than 0")
+                    else:
+                        initial=initialinput
+
+                    average=0
+                    inflationinput=st.number_input("Provide Average Inflation Rate in %  (max. +/- 20%)")
+                    if inflationinput<-20 or inflationinput>20:
+                        st.error("Please provide initial input in given range ")
+                    else:
+                        average=inflationinput
+
+                    years=0
+                    yearsinput=st.number_input("Provide Amount of Years  (max. 100)")
+                    if yearsinput<0:
+                        st.error("Please provide initial input bigger than 0")
+                    else:
+                        years=yearsinput
+
                 if years and initial and average!=0:
                     forprint=getPurchasingPower.getFuturePP(initial,average,years)
                     st.info(forprint)
+
             
             with historical:
                 st.write("Historical Purchasing Power Calulator")
@@ -197,7 +223,12 @@ with bodyContainer:
                     listcountrys=[]
                     listcountrys=getPurchasingPower.getHistoricalPPlist()
                     country=st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
-                    initial=st.number_input("Provide Amount today")
+                    
+                    initialinput=st.number_input("Provide Amount today")
+                    if initialinput and initialinput<0:
+                        st.error("Please provide amount bigger than 0")
+                    else: 
+                        initial=initialinput
                     years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY) (Range: 1970-2023)")
                     
                     #year format check
@@ -292,10 +323,29 @@ with bodyContainer:
                         checkcalculator=st.radio("Choose your prevered setting", ["standard", "advanced"] )
                         if checkcalculator=="advanced":
                    # totalamount=int(st.number_input("Put in your total spendings"))
-                            rentamount=int(st.number_input("Put in your rent spendings"))
-                            grocamount=int(st.number_input("Put in your groc spendings"))
-                            restaurantamount=int(st.number_input("Put in restaurant spendings"))
+                            rentamountinput=int(st.number_input("Put in your rent spendings"))
+                            rentamount=0
+                            if rentamountinput<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                rentamount=rentamountinput
+                            
+                            grocamountinput=int(st.number_input("Put in your groc spendings"))
+                            grocamount=0
+                            if grocamountinput<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                grocamount=grocamountinput
+                            
+                            restaurantamountinput=int(st.number_input("Put in restaurant spendings"))
+                            restaurantamount=0
+                            if restaurantamountinput<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                restaurantamount=restaurantamountinput
+
                             totalamount=rentamount+grocamount+restaurantamount
+                            
                             with righte:
                                 if button:
                                     if totalamount==0:
@@ -303,10 +353,13 @@ with bodyContainer:
                                     else:
                                         ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
                         if checkcalculator=="standard":
-                            totalamount2=int(st.number_input("Put in your total spendings"))
+                            totalamount2input=int(st.number_input("Put in your total spendings"))
+                            totalamount2=0
+                            if totalamount2input<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                totalamount2=totalamount2input
+
                             with righte:
-                                if button:
-                                    if totalamount2==0:
-                                        st.write("Please Provide Amount")
-                                    else:
-                                        ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
+                                if button and totalamount2!=0:
+                                    ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
