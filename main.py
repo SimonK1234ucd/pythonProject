@@ -240,8 +240,8 @@ with bodyContainer:
                     country = st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b") #Populates a selection box with the retrieved contries
                     
                     # Provide inital amount and errror check it 
-                    initialinput = float(st.number_input(f"Amount")) # User input for the initial amount makes sure it is a float
-                    st.caption("Please provide the amount you would like to examine") # caption for clarification
+                    initialinput = float(st.number_input(f"Please provide the amount you would like to examine")) # User input for the initial amount makes sure it is a float
+                    
 
                     if initialinput < 0: # Error check for the initial amount is less than zero aka. negative...
                         st.error("Amount must be greater than 0") # Error message if the amount is less than zero
@@ -336,7 +336,7 @@ with bodyContainer:
                     #standard is just total amount, advanced is specified
                     checkcalculator = st.radio("Details Level", ["Standard", "Advanced"] ).lower()
             
-            with right: 
+            with left: 
                     if checkcalculator == "advanced": # Given the user selects the advanced option
         
                         rentInput = int(st.number_input("Put in your rent spendings")) #user input of amount which gets checked if they are negativ
@@ -358,10 +358,10 @@ with bodyContainer:
                         
                         if standard_totalExpenditure < 0: # Controls if the user input is negative
                             st.error("Please provide initial input bigger than 0") 
-                        
-            if button and checkcalculator=="advanced" and advanced_totalExpenditure != 0:
-                #returns a table with the initial and exchanged amount of each category (by calling function instantly printed in streamlit)
-                ESC.getcalculatorforexchange(selectedRegioncalculatororigin,
+            with right:            
+                if button and checkcalculator=="advanced" and advanced_totalExpenditure != 0:
+                    #returns a table with the initial and exchanged amount of each category (by calling function instantly printed in streamlit)
+                    ESC.getcalculatorforexchange(selectedRegioncalculatororigin,
                                              selectedRegioncalculatordestination,
                                              origin,
                                              destination,
@@ -370,9 +370,9 @@ with bodyContainer:
                                              rentInput,
                                              groceryInput)
 
-            if button and checkcalculator=="standard" and standard_totalExpenditure != 0:
-                #returns a table with the initial and exchanged amount for total spending (by calling function instantly printed in streamlit)
-                ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin, 
+                if button and checkcalculator=="standard" and standard_totalExpenditure != 0:
+                    #returns a table with the initial and exchanged amount for total spending (by calling function instantly printed in streamlit)
+                    ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin, 
                                                    selectedRegioncalculatordestination, 
                                                    origin, 
                                                    destination, 
