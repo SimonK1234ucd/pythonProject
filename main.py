@@ -81,7 +81,7 @@ with bodyContainer:
             dataForChart = pd.DataFrame(sorted_currency_data, columns=["Currency", valueColumn])
 
             # Filter data based on the selected threshold
-            filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]
+            filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]# select the date where the value of dataforchart is in given threshold
             st.write(f"This chart displays the exchange rate of the {selectedCur} against the listed currencies:")
             sorted_data = filteredData.sort_values(by=valueColumn)
             st.bar_chart(data=sorted_data,x="Currency",y=valueColumn,height=500)
@@ -99,29 +99,35 @@ with bodyContainer:
                 baseCurrency = st.selectbox("Select Base currency",currencyTypes) # e.g. EUR
 
             with right:
-                amount = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency
+                amount=1
+                amountinput = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency#   %d-> user only can put in whole values 1,2,3,
+                if amountinput<=0:
+                    st.error("Please provide amount bigger than 0")
+                else:
+                    amount=amountinput
+                
             #select here the currency the user like to convert to 
 
-
-            allCurrencies =getCurrencies.getSpecificCurrency(baseCurrency)
+            
+            allCurrencies =getCurrencies.getSpecificCurrency(baseCurrency) #gets the whole data for a selected currency (basecurrency)
             selectedCurrencies= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)
             st.caption("The exchange rates are displayed in current time and are subject to change.")
 
 
             rows = []
-            headers = ["Base Currency", "Currency", "Exchange Rate", "Amount Exchanged"]
+            headers = ["Base Currency Value", "Currency", "Exchange Rate", "Amount Exchanged"] #for table headers
 
-            
+            #calculates for the selectesCurrencies the follwing values (for loop by going through the allcurrencie data for the selected currencies)
             for currency in selectedCurrencies:
                 selectedAmountExchangeRated = amount * allCurrencies[currency]
                 selectedAmountBaseCurrency = f"{amount} {baseCurrency}"
                 exchangeRateForSingleBaseCurrency = allCurrencies[currency]
 
-                rows.append([selectedAmountBaseCurrency, currency, exchangeRateForSingleBaseCurrency, selectedAmountExchangeRated])
+                rows.append([selectedAmountBaseCurrency, currency, exchangeRateForSingleBaseCurrency, selectedAmountExchangeRated])#adding these values to the rows list
 
             # Create a DataFrame from the rows
-            df = pd.DataFrame(rows, columns=headers)
-            st.dataframe(df, width=1250)
+            df = pd.DataFrame(rows, columns=headers)#create dataframe for table
+            st.dataframe(df, width=1250)#create table
 
 
             st.write(f"The bar chart displays the exchange rate of the {baseCurrency} against the selected currencies.")
@@ -132,7 +138,7 @@ with bodyContainer:
             st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
-            # Get the list of currencies
+            # Get the list of all the currencies against the euro
             currencylistE=getreadfile.getAllCurrenciesComparedToEuro()
 
             # Create two columns for side-by-side selection boxes
@@ -147,27 +153,27 @@ with bodyContainer:
             with col2:
                 date = st.selectbox("Select Time Period", time_periods, key = "time_period") 
             
-            # Set the current date explicitly for testing or real usage
+            # Set the current date
             current_date = pd.to_datetime("2024-11-13")
 
-            # Determine the start date based on the selected time period
-            periods = {
-                "YTD": current_date.replace(month=1, day=1),
-                "1 year": current_date - pd.DateOffset(years=1),
+            # Determine the start date based on the selected time period(create the timefraems)
+            periods = {#dictionary of start dates
+                "YTD": current_date.replace(month=1, day=1),#first day year
+                "1 year": current_date - pd.DateOffset(years=1),#current date -1 year
                 "2 years": current_date - pd.DateOffset(years=2),
                 "3 years": current_date - pd.DateOffset(years=3),
                 "5 years": current_date - pd.DateOffset(years=5),
                 "10 years": current_date - pd.DateOffset(years=10),
                 "20 years": current_date - pd.DateOffset(years=20),
             }
-            start_date = periods.get(date, current_date)
+            start_date = periods.get(date, current_date) #when selection of timeframe matches on period in dictionary, this one gets returned (default=current date)
 
             
             # Get the historical chart data for the selected currency
             chartplot = getcurrencychart(curE)
 
             # Filter the data based on the selected time period
-            chartplot = chartplot[chartplot.index >= start_date]
+            chartplot = chartplot[chartplot.index >= start_date]#This filters the DataFrame chartplot by selecting only the rows where the index satisfies the condition.
 
             # Display the historical chart
             st.write(f"Historical Data of the Exchange Rate of the {curE} against the EUR for the Selected Time Period ({date})")
@@ -188,24 +194,53 @@ with bodyContainer:
                 st.write("Future Purchasing Power Calulator")
             #if check=="Future Purchasing Power":
                 with st.expander("Settings"):
-                    initial=st.number_input("Provide Initial Amount in EUR")
-                    average=st.number_input("Provide Average Inflation Rate in %  (max. 20%)")
-                    years=st.number_input("Provide Amount of Years  (max. 100)")
+                    
+                    #provide and error-test initial input
+                    initial=0
+                    initialinput=st.number_input("Provide Initial Amount in EUR")
+                    if initialinput<0:
+                        st.error("Please provide initial input bigger than 0")
+                    else:
+                        initial=initialinput
+
+                    #provide and error-test inflation input
+                    average=0
+                    inflationinput=st.number_input("Provide Average Inflation Rate in %  (max. +/- 20%)")
+                    if inflationinput<-20 or inflationinput>20:
+                        st.error("Please provide initial input in given range ")
+                    else:
+                        average=inflationinput
+
+                    #provide and error-test year input
+                    years=0
+                    yearsinput=st.number_input("Provide Amount of Years  (max. 100)")
+                    if yearsinput<0:
+                        st.error("Please provide initial input bigger than 0")
+                    else:
+                        years=yearsinput
+
                 if years and initial and average!=0:
-                    forprint=getPurchasingPower.getFuturePP(initial,average,years)
+                    forprint=getPurchasingPower.getFuturePP(initial,average,years)#gets the future Purchasing Power ready to print
                     st.info(forprint)
+
             
             with historical:
                 st.write("Historical Purchasing Power Calulator")
                 with st.expander("Settings"):
                     listcountrys=[]
-                    listcountrys=getPurchasingPower.getHistoricalPPlist()
+                    listcountrys=getPurchasingPower.getHistoricalPPlist()#gets a list of all the countries available to calculate the historical PP
                     country=st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
-                    initial=st.number_input("Provide Amount today")
+                    
+                    #provide inital amount and errror check it 
+                    initialinput=st.number_input("Provide Amount today")
+                    if initialinput and initialinput<0:
+                        st.error("Please provide amount bigger than 0")
+                    else: 
+                        initial=initialinput
                     years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY) (Range: 1970-2023)")
                     
                     #year format check
-                    checkb=False
+                    checkb=False#create check-variable to modufy during the check
                     if years:
                         try:
                             checka=int(years)
@@ -223,7 +258,7 @@ with bodyContainer:
                 data3=getChartMPV.CountryPurchasingPower(country)#to get chart
                 st.write(f"Hisorical Money Value of {country}: (Index scaled: 100 = 1970)")
                
-                st.line_chart(data3.set_index("Year"))
+                st.line_chart(data3.set_index("Year"))#data3.set_index("Year") converts Year column in index – ensures using Year as x-Achsi 
             with historical:        
                 if checkb==True and initial:
                     data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)#to get historical data 
@@ -282,24 +317,44 @@ with bodyContainer:
                     selectedRegioncalculatororigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
                     year=2024
 
-                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()
+                    listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
                     origin=st.selectbox("Please provide your Home-country",listofcountries)
             with righte:
                     st.write("Enter the information of your perfered destination")
                     selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
-                    listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()
+                    listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
                     destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
-                    button=st.button("start calculation")
+                    
+                    button=st.button("start calculation")#to start calculation after putting in all inputs
 
             with lefte: 
                     with st.expander("Settings"):
                         checkcalculator=st.radio("Choose your prevered setting", ["standard", "advanced"] )
                         if checkcalculator=="advanced":
                    # totalamount=int(st.number_input("Put in your total spendings"))
-                            rentamount=int(st.number_input("Put in your rent spendings"))
-                            grocamount=int(st.number_input("Put in your groc spendings"))
-                            restaurantamount=int(st.number_input("Put in restaurant spendings"))
+                            rentamountinput=int(st.number_input("Put in your rent spendings"))
+                            rentamount=0
+                            if rentamountinput<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                rentamount=rentamountinput
+                            
+                            grocamountinput=int(st.number_input("Put in your groc spendings"))
+                            grocamount=0
+                            if grocamountinput<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                grocamount=grocamountinput
+                            
+                            restaurantamountinput=int(st.number_input("Put in restaurant spendings"))
+                            restaurantamount=0
+                            if restaurantamountinput<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                restaurantamount=restaurantamountinput
+
                             totalamount=rentamount+grocamount+restaurantamount
+
                             with righte:
                                 if button:
                                     if totalamount==0:
@@ -307,10 +362,13 @@ with bodyContainer:
                                     else:
                                         ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
                         if checkcalculator=="standard":
-                            totalamount2=int(st.number_input("Put in your total spendings"))
+                            totalamount2input=int(st.number_input("Put in your total spendings"))
+                            totalamount2=0
+                            if totalamount2input<0:
+                                st.error("Please provide initial input bigger than 0")
+                            else:
+                                totalamount2=totalamount2input
+
                             with righte:
-                                if button:
-                                    if totalamount2==0:
-                                        st.write("Please Provide Amount")
-                                    else:
-                                        ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
+                                if button and totalamount2!=0:
+                                    ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
