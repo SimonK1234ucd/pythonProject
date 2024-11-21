@@ -16,13 +16,16 @@ def getAllCurrenciesComparedToEuro():
         IndexError: If the dataset does not contain the expected column structure.
      """
 
+    #Retreives the file: eurohistoricaldata.csv from the files folder
     file_path= Path(__file__).parent.parent / "files" / "eurohistoricaldata.csv"
+
+    # Initalizeses a dataframe of the retrieved file using pandas
     reader= pd.read_csv(file_path)
 
-    currencylisteuro=[]
-    currencylisteuro = reader.columns[1:42].tolist()
+    # Splices the first row of the dataframe and converts it to a list (removes the date column)
+    currenciesInRelationToEuro = reader.columns[1:42].tolist()
 
-    return currencylisteuro
+    return currenciesInRelationToEuro
 
 def getcurrencychart(cur):
     """

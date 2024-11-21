@@ -1,7 +1,9 @@
 import pandas as pd
 from pathlib import Path
 
-def getFuturePP(initial,average,years):
+# Completed All Details... @Otto
+
+def getFuturePP(initial, average, years):
     """
     Calculates the future purchasing power of an initial amount given an average inflation rate and number of years.
 
@@ -22,21 +24,23 @@ def getFuturePP(initial,average,years):
     Raises:
         ValueError: If the inflation rate or years result in an invalid calculation.
     """
+    # Validate the input values, inflation rate and years
     if average>20:
-        a=("Inflation Rate Input to Big!")
-        return a
+        # Stops the function from running due to return statemnet
+        return ("Inflation Rate Input to Big!")
 
-
+    # Check if the number of years is within a reasonable limit
     elif years>100:
-        b=("Amount of Years is to Big!")
-        return b
-            
+        # Stops the function from running due to return statemnet
+        return ("Amount of Years is to Big!")
+
+    # if no previous conditions are met            
     else: 
-        FutureBuying=initial*(1-(average/100))**years
-        forreturn = ( #####NEED HELP HERE WHEN HIGH AMOUNT OUTPUT=0, IDK WHY
-             f"The future buying power of {initial} is: {"{:.2f}".format(FutureBuying)}"
-            )
-        return forreturn
+        # a product of the initial amount and the inflation rate forward discounted by the number of years
+        futureBuyingPower = initial * (1 - (average/100)) ** years
+        # Returns the future buying power of the provided (initial) amount
+        # :.f is a format specifier that formats the number to 2 decimal places
+        return (f"The future buying power of {initial} is: {"{:.2f}".format(futureBuyingPower)}")
     
 def getHistoricalPPlist():
     """
@@ -56,7 +60,7 @@ def getHistoricalPPlist():
     reader = pd.read_csv(file_path)
 
     countrylist=[]
-    countrylist=reader.iloc[:, 0].tolist()
+    countrylist=reader.iloc[:, 0].tolist() #selects thhe specific colomn (the one with country list)
     return countrylist
 
 def getHistorialPPdata(country,year,amount):

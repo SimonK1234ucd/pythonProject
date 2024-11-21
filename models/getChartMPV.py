@@ -9,17 +9,13 @@ def CountryPurchasingPower(selectedCountry):
         """
         Gets the purchasing power of a country given by a paramter
 
-
-
         Parameters:
-        selectedCountry (str): The country selected by the user e.g. "United States"
+                selectedCountry (str): The country selected by the user e.g. "United States"
 
         Returns: 
-        DataFrame: A dataframe containing the years and the purchasing power of the country
-        e.g.        Year       Value
-                0  1970-01-01  100.000000
-
-
+                DataFrame: A dataframe containing the years and the purchasing power of the country
+                e.g.        Year       Value
+                        0  1970-01-01  100.000000
         """
 
         # Check if the selected country is a string        
@@ -46,9 +42,11 @@ def CountryPurchasingPower(selectedCountry):
 
         countryValues = country.iloc[:, 2:].values.flatten().tolist()
 
-        # Calculates the money of the country in the year 1970
+        # Calculates the money of the country in the first recorded year, (1970)
+                # Money Value is set to 100, due to it being an index value
         moneyValue = 100
         
+        # Defines a list, that starts with the initial value of 100 (also our money value)
         dataForChart = [100]
 
         # Calculates the money purchasing power of the country for each year
@@ -66,7 +64,9 @@ def CountryPurchasingPower(selectedCountry):
                 "Value": dataForChart })
 
         # Convert the year to datetime so it can be displayed in the chart
+        #Selectes the column, which is given as a key of the dictionary and converts it to datetime
         dataFrame["Year"] = pd.to_datetime(dataFrame["Year"], format='%Y',errors='coerce')
 
+        # Returns dataframe to be handled elsewhere
         return dataFrame
 
