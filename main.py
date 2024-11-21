@@ -14,32 +14,36 @@ from models.getCurrencyRisk import display_currency_risk
 import models.getExpenseByIndex as EXP
 import models.getExchangeCalculator as ESC
 
-# Set the page configuration
+# Change page configuration to other settings than default
 st.set_page_config(layout="wide", page_title="Exchange Tool", page_icon="https://seeklogo.com/images/U/university-college-dublin-logo-3AFABC5D8E-seeklogo.com.png")
 
-# Set the page header as a container
+# defining a headerConatiners, which holds the header of the page
 headerContainer = st.container()
-with headerContainer:
-    columns = st.columns(2)
-    left = columns[0]
-    right = columns[1]
 
-    with left:
+# with = "in the container put" 
+with headerContainer:
+    # Creating two columns and assigning each column to a variable by index...
+    [left, right] = st.columns(2)
+
+    with left: # Adding markdown to the left column
         st.markdown("<h1 style='color:deepskyblue;'>Exchange Tool</h1>", unsafe_allow_html=True)
         st.caption("This tool enables you to convert currencies, access detailed statistics, explore cost of living information, and much more.")
 
-    with right:
+    with right: # Adding an image to the right column of UCD and group names...
         st.image("https://i.ibb.co/vjMnKrv/forupload.png[/img][/url]", width=350)
 
-bodyContainer = st.container()
+bodyContainer = st.container() # Define body container to group elements
 
 with bodyContainer:
+    # Defines two tabs and assigns it by index
+        # These are the two overall tabs for the page...
     [currencyInformation, CostofLiving] = st.tabs(["Currency Information","Cost of Living" ])
 
-
+    # With the first of the two tabs, we can now add content to the tab...
     with currencyInformation:
         # Create tabs for Currency Converter and Historical Exchange Rates and so on
         tabs = st.tabs(["Currency Overview", "Compare Currencies", "Currencies Historically", "Purchasing Power Calculator"])
+        # Assign each tab to a variable by index
         currenOverviewTab = tabs[0]
         compareCurrenciesTab = tabs[1]
         currenciesHistoricallyTab = tabs[2]
@@ -63,7 +67,7 @@ with bodyContainer:
             sorted_currency_data = sorted(currencyList.items(), key=lambda item: item[1])
         
             # Extract values to calculate thresholds
-            values = [value for currency, value in sorted_currency_data]
+            values = list(map(lambda item: item[1], sorted_currency_data))
             median = pd.Series(values).median()
             minValue= 1
             maxValue= median +50
