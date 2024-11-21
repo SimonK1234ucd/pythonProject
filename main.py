@@ -146,13 +146,11 @@ with bodyContainer:
         with currenciesHistoricallyTab: # Everything in the Historical Exchange Rates tab
 
             st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
-            st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
+            st.caption("This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.")
 
-            # Get the list of all the currencies against the euro
-            currencylistE = getreadfile.getAllCurrenciesComparedToEuro()
+            currencylistE = getreadfile.getAllCurrenciesComparedToEuro() # Get the list of all the currencies against the euro
 
-            # Create two columns for side-by-side selection boxes
-            [left, right] = st.columns(2)
+            [left, right] = st.columns(2) # Create two columns for side-by-side selection boxes
 
             with left:
                 curE = st.selectbox("Select Currency to Compare", currencylistE, key = "tab2a") # Selected currency for the comparison
@@ -165,7 +163,6 @@ with bodyContainer:
             # Set the current date
             current_date = pd.to_datetime("2024-11-13")
 
-            
             periods = { # Dictionary of start dates, where the key is the time period and the value is the start date
                 "YTD": current_date.replace(month = 1, day = 1), # Replaces the month and day of the current date with 1, to get the beginning of the year (YTD)
                 "1 year": current_date - pd.DateOffset(years=1), # current date -1 year
@@ -271,27 +268,28 @@ with bodyContainer:
             
             
                 
-    with CostofLiving:
+    with CostofLiving: # The other main tab of the page: Cost of Living, defined in the beginning of the code
             # Changs this to a more correct labelling :)
         tabs = st.tabs(["Cost of Living Overview","Exchange Spending Calculator"])
         CoLOverview = tabs[0]
         exchaangespendigcalc = tabs[1]
         
-        # Add content for the Living expenses tab here
-        with CoLOverview:
-            st.markdown("<p style='font-weight:bold'>Overview Cost of Living </p>", unsafe_allow_html=True)
+
+        with CoLOverview: # Cost of Living Overview tab
+            st.markdown("<p style='font-weight:bold'>Overview Cost of Living </p>", unsafe_allow_html=True) 
             st.markdown("<p style='font-size:14px'>This tab offers an overview of the cost of living across different countries around the world.</p>", unsafe_allow_html=True)
 
-            selectWrapper = st.container()
-            with selectWrapper:
+            selectWrapper = st.container() # Intializes a container for the selection boxes
+            
+            with selectWrapper: # Adds the selection boxes to the selectWrapper container
 
-                columns = st.columns(2)
+                [left, right] = st.columns(2) # Defines two columns for the selection boxes
 
-                with columns[0]:
-                    selectedYear = st.selectbox("Select year", [2024, 2023, 2022])
+                with left: # Left column for the selection boxes
+                    selectedYear = st.selectbox("Select year", [2024, 2023, 2022]) # Available years for selection
 
-                with columns[1]:
-                    selectedRegion = st.selectbox("Select Region", ["Europe", "Asia", "America", "Africa", "Oceania"])
+                with right: # Right column for the selection boxes
+                    selectedRegion = st.selectbox("Select Region", ["Europe", "Asia", "America", "Africa", "Oceania"]) # Available regions for selection
 
 
                 # Default values
@@ -305,80 +303,77 @@ with bodyContainer:
                     year = selectedYear
 
             # Get the living expenses data for the selected year and region
-            dataframe = EXP.getLivingExpenses(year, region)
+            dataframe = EXP.getLivingExpenses(year, region) # Fetches a dateframe with the living expenses for the selected year and region from the getExpenseByIndex module
     
-            st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)")
-            st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=1400)
+            st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)") # Short caption to explain the table
+            st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=1400) # Displays the dataframe in a table
             
         with exchaangespendigcalc:
             st.markdown("<p style='font-weight:bold'>Exchange Spending Calculator</p>", unsafe_allow_html=True)
-            st.markdown("<p style='font-size:14px'>This tab provides a comparison of living costs for exchange students. Simply enter your spending from your home country, and it will calculate the equivalent amount needed to afford the same products and services in your chosen destination.</p>", unsafe_allow_html=True)
-        # Add content for the Buying Power Overview tab here
-            tabs=st.columns(2)
-            lefte=tabs[0]
-            righte=tabs[1]
-
-            with lefte:
+            st.caption("This tab provides a comparison of living costs for exchange students. Simply enter your spending from your home country, and it will calculate the equivalent amount needed to afford the same products and services in your chosen destination.")
+        
+            # Add content for the Buying Power Overview tab here
+            [left, right] = st.columns(2)
+            
+            with left:
                     st.write("Enter the information of your origin country")
                     selectedRegioncalculatororigin = st.selectbox("Select Region of origin", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregionsorigin")
                     year=2024
 
                     listofcountries=EXP.getLivingExpenses(year,selectedRegioncalculatororigin).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
                     origin=st.selectbox("Please provide your Home-country",listofcountries)
-            with righte:
+            with right:
                     st.write("Enter the information of your perfered destination")
-                    selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"],key="selectregiondestination")
-                    listofcountries2=EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
-                    destination=st.selectbox("Please provide your prefered detionation",listofcountries2)
 
-                    button=st.button("start calculation")#to start calculation after putting in all inputs
+                    selectedRegioncalculatordestination = st.selectbox("Select Region of prefered destination", ["Europe", "Asia", "America", "Africa", "Oceania"], key="selectregiondestination")
+                    availabeCountries = EXP.getLivingExpenses(year,selectedRegioncalculatordestination).iloc[1:,1].tolist()#gets a list of all the countries in selected region 
+                    
+                    destination = st.selectbox("Please provide your prefered detionation", availabeCountries)
 
-            with lefte: 
-                    with st.expander("Settings"):
-                        #standard is just total amount, advanced is specified
-                        checkcalculator=st.radio("Choose your prevered setting", ["standard", "advanced"] )
-                        if checkcalculator=="advanced":
-                            #user input of amount which gets checked if they are negativ
-                            rentamountinput=int(st.number_input("Put in your rent spendings"))
-                            rentamount=0
-                            if rentamountinput<0:
-                                st.error("Please provide initial input bigger than 0")
-                            else:
-                                rentamount=rentamountinput
-                            #user input of amount which gets checked if they are negativ
-                            grocamountinput=int(st.number_input("Put in your groc spendings"))
-                            grocamount=0
-                            if grocamountinput<0:
-                                st.error("Please provide initial input bigger than 0")
-                            else:
-                                grocamount=grocamountinput
-                            #user input of amount which gets checked if they are negativ
-                            restaurantamountinput=int(st.number_input("Put in restaurant spendings"))
-                            restaurantamount=0
-                            if restaurantamountinput<0:
-                                st.error("Please provide initial input bigger than 0")
-                            else:
-                                restaurantamount=restaurantamountinput
+                    button = st.button("Run Expenses")#to start calculation after putting in all inputs
 
-                            totalamount=rentamount+grocamount+restaurantamount
+            with left: 
+                    #standard is just total amount, advanced is specified
+                    checkcalculator = st.radio("Details Level", ["Standard", "Advanced"] ).lower()
+            
+            with right: 
+                    if checkcalculator == "advanced": # Given the user selects the advanced option
+        
+                        rentInput = int(st.number_input("Put in your rent spendings")) #user input of amount which gets checked if they are negativ
+                        
+                        groceryInput = int(st.number_input("Put in your groc spendings")) #user input of amount which gets checked if they are negativ
+                        
+                        restaurantInput = int(st.number_input("Put in restaurant spendings")) #user input of amount which gets checked if they are negativ
+                        
+                        # Checks if the any of the users input is negative
+                        if rentInput < 0 or restaurantInput < 0 or groceryInput < 0:
+                            st.error("Please provide an amount greater than 0 for all categories") # Error message if any of the inputs are less than zero
 
-                            with righte:
-                                if button:
-                                    if totalamount==0:
-                                        st.write("Please Provide Amount")
-                                    else:
-                                        #returns a table with the initial and exchanged amount of each category (by calling function instantly printed in streamlit)
-                                        ESC.getcalculatorforexchange(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount,restaurantamount,rentamount,grocamount)
-                        if checkcalculator=="standard":
-                            totalamount2input=int(st.number_input("Put in your total spendings"))
-                            totalamount2=0
-                            #user input of amount which gets checked if they are negativ
-                            if totalamount2input<0:
-                                st.error("Please provide initial input bigger than 0")
-                            else:
-                                totalamount2=totalamount2input
+                        # Calculates the total amount for the advanced option    
+                        advanced_totalExpenditure = rentInput + groceryInput + restaurantInput # Total spenditure
 
-                            with righte:
-                                if button and totalamount2!=0:
-                                    #returns a table with the initial and exchanged amount for total spending (by calling function instantly printed in streamlit)
-                                    ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin,selectedRegioncalculatordestination,origin,destination,totalamount2)
+                    # If the user selects the standard option
+                    elif checkcalculator == "standard":
+                        standard_totalExpenditure = float(st.number_input("Put in your total spendings")) # Number input converted to float for the total spenditure
+                        
+                        if standard_totalExpenditure < 0: # Controls if the user input is negative
+                            st.error("Please provide initial input bigger than 0") 
+                        
+            if button and checkcalculator=="advanced" and advanced_totalExpenditure != 0:
+                #returns a table with the initial and exchanged amount of each category (by calling function instantly printed in streamlit)
+                ESC.getcalculatorforexchange(selectedRegioncalculatororigin,
+                                             selectedRegioncalculatordestination,
+                                             origin,
+                                             destination,
+                                             advanced_totalExpenditure,
+                                             restaurantInput,
+                                             rentInput,
+                                             groceryInput)
+
+            if button and checkcalculator=="standard" and standard_totalExpenditure != 0:
+                #returns a table with the initial and exchanged amount for total spending (by calling function instantly printed in streamlit)
+                ESC.getcalculatorforexchangesimple(selectedRegioncalculatororigin, 
+                                                   selectedRegioncalculatordestination, 
+                                                   origin, 
+                                                   destination, 
+                                                   standard_totalExpenditure)
