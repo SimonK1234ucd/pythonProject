@@ -247,21 +247,21 @@ with bodyContainer:
 
                 with columns[1]:
                     selectedRegion = st.selectbox("Select Region", ["Europe", "Asia", "America", "Africa", "Oceania"])
-                
+
+
+                # Default values
                 year = 2024
                 region = "Europe"
 
+                # Update values if changed
                 if selectedRegion != region:
                     region = selectedRegion
-
                 if selectedYear != year:
                     year = selectedYear
 
+            # Get the living expenses data for the selected year and region
             dataframe = EXP.getLivingExpenses(year, region)
-        
-
-
-            chart_type = "line"
+    
             st.caption("The table displays the living costs of different countries indexed in relation to New York (index 100)")
             st.dataframe(dataframe[["Country", "Cost of Living Index", "Rent Index", "Groceries Index", "Restaurant Price Index"]], height=500, width=1400)
             
