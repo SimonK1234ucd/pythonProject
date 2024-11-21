@@ -200,11 +200,11 @@ with bodyContainer:
             st.markdown("<p style='font-size:14px'>This tab provides comprehensive information for a clear overview of the purchasing power of a selected currency.</p>", unsafe_allow_html=True)
         
             [historical,future] = st.columns(2)
-            
+
             with future:
                 st.write("Future Purchasing Power Calulator")
-            #if check=="Future Purchasing Power":
-                with st.expander("Settings"):
+            
+                with st.expander("Future PPC Configuration"): #
                     
                     #provide and error-test initial input
                     initial=0
@@ -236,44 +236,44 @@ with bodyContainer:
 
             
             with historical:
-                st.write("Historical Purchasing Power Calulator")
-                with st.expander("Settings"):
-                    listcountrys=[]
-                    listcountrys=getPurchasingPower.getHistoricalPPlist()#gets a list of all the countries available to calculate the historical PP
-                    country=st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b")
+                st.write("Historical Purchasing Power Calulator") # Small title for the historical Purchasing Power Calculator
+
+                with st.expander("Historical PPC Configuration"): # Declare an expander to hide the configuration options
+
+                    listcountrys = getPurchasingPower.getHistoricalPPlist() # Calls getHistoricalPPlist to get the list of available countries
+                    country = st.selectbox("Please Select the country of your interest:", listcountrys, key="tab3b") #Populates a selection box with the retrieved contries
                     
-                    #provide inital amount and errror check it 
-                    initialinput=st.number_input("Provide Amount today")
-                    if initialinput and initialinput<0:
-                        st.error("Please provide amount bigger than 0")
-                    else: 
-                        initial=initialinput
-                    years=st.text_input("What year do you like to know the Purchasing Power of? (YYYY) (Range: 1970-2023)")
+                    # Provide inital amount and errror check it 
+                    initialinput = float(st.number_input(f"Amount")) # User input for the initial amount makes sure it is a float
+                    st.caption("Please provide the amount you would like to examine") # caption for clarification
+
+                    if initialinput < 0: # Error check for the initial amount is less than zero aka. negative...
+                        st.error("Amount must be greater than 0") # Error message if the amount is less than zero
                     
-                    #year format check
-                    checkb=False#create check-variable to modufy during the check
-                    if years:
-                        try:
-                            checka=int(years)
-                        
-                            if checka >=1970 and checka<=2024:
-                                checkb=True
+                    availableYears = sorted([str(year) for year in range(1970, 2024)], reverse = True) # A loop with a range of years from 1970 to 2024, which is then sorted in reverse order
+                    years = st.selectbox("Please Select the year of your interest:", availableYears, key="tab3c") # Selection box for the year of interest
+                    
+                    # Error checks for the country and year
+                    if country is None: # Error check for the country is None
+                        st.error("Please select a country") # Error message if the country is None
 
-                            else: 
-                                st.error("Please provide a year in given format and range")
-                        except ValueError:
-                            st.error("Please enter a valid year in the format YYYY.")
+                    if years is None: # Error check for the year is None
+                        st.error("Please select a year") # Error message if the year is None
 
+                    data3 = getChartMPV.CountryPurchasingPower(country) # Retrieves a dataframe from the CountryPurchasingPower function from the getChartMPV module
+                    st.write(f"Hisorical Money Value of {country}: (Index scaled: 100 = 1970)")
 
-            if country:
-                data3=getChartMPV.CountryPurchasingPower(country)#to get chart
-                st.write(f"Hisorical Money Value of {country}: (Index scaled: 100 = 1970)")
-               
+                # Indented back to the same level as the with historical: to ensure the chart is displayed in the same column as the historical Purchasing Power Calculator               
                 st.line_chart(data3.set_index("Year"))#data3.set_index("Year") converts Year column in index – ensures using Year as x-Achsi 
-            with historical:        
-                if checkb==True and initial:
-                    data3b=getPurchasingPower.getHistorialPPdata(country,years,initial)#to get historical data 
-                    st.info(f"The Purchasing Power of {"{:.2f}".format(initial)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
+   
+                data3b = getPurchasingPower.getHistorialPPdata(country, years, initialinput) #to get historical data 
+                
+                if initialinput != 0:
+                    st.info(f"The Purchasing Power of {"{:.2f}".format(initialinput)} today is equal to {"{:.2f}".format(data3b)} in {years}")            
+                elif initialinput == 0: # Error check for the initial amount is zero
+                    st.info("Please provide an amount in order to proceed")
+
+                
             
 
     with CostofLiving:
