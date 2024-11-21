@@ -25,7 +25,7 @@ with headerContainer:
     right = columns[1]
 
     with left:
-        st.markdown("<h1 style='color:deepskyblue;'>Exchange Tool</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='color:deepskyblue;'>Exchange Tool</h1>", unsafe_allow_html=True) #unsafe_allow_html=True allows include HTML style
         st.caption("This tool enables you to convert currencies, access detailed statistics, explore cost of living information, and much more.")
 
     with right:
@@ -77,7 +77,7 @@ with bodyContainer:
             dataForChart = pd.DataFrame(sorted_currency_data, columns=["Currency", valueColumn])
 
             # Filter data based on the selected threshold
-            filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]
+            filteredData=dataForChart[(dataForChart[valueColumn] >= threshold[0]) & (dataForChart[valueColumn] <= threshold[1])]# select the date where the value of dataforchart is in given threshold
             st.write(f"This chart displays the exchange rate of the {selectedCur} against the listed currencies:")
             sorted_data = filteredData.sort_values(by=valueColumn)
             st.bar_chart(data=sorted_data,x="Currency",y=valueColumn,height=500)
@@ -96,7 +96,7 @@ with bodyContainer:
 
             with right:
                 amount=1
-                amountinput = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency
+                amountinput = st.number_input("Enter Amount", value=1, step=1, format="%d") #amount of base currency#   %d-> user only can put in whole values 1,2,3,
                 if amountinput<=0:
                     st.error("Please provide amount bigger than 0")
                 else:
@@ -104,26 +104,26 @@ with bodyContainer:
                 
             #select here the currency the user like to convert to 
 
-
-            allCurrencies =getCurrencies.getSpecificCurrency(baseCurrency)
+            
+            allCurrencies =getCurrencies.getSpecificCurrency(baseCurrency) #gets the whole data for a selected currency (basecurrency)
             selectedCurrencies= st.multiselect("Select Currencies", currencyTypes, default=[ "USD","GBP", "JPY"],)
             st.caption("The exchange rates are displayed in current time and are subject to change.")
 
 
             rows = []
-            headers = ["Base Currency Value", "Currency", "Exchange Rate", "Amount Exchanged"]
+            headers = ["Base Currency Value", "Currency", "Exchange Rate", "Amount Exchanged"] #for table headers
 
-            
+            #calculates for the selectesCurrencies the follwing values (for loop by going through the allcurrencie data for the selected currencies)
             for currency in selectedCurrencies:
                 selectedAmountExchangeRated = amount * allCurrencies[currency]
                 selectedAmountBaseCurrency = f"{amount} {baseCurrency}"
                 exchangeRateForSingleBaseCurrency = allCurrencies[currency]
 
-                rows.append([selectedAmountBaseCurrency, currency, exchangeRateForSingleBaseCurrency, selectedAmountExchangeRated])
+                rows.append([selectedAmountBaseCurrency, currency, exchangeRateForSingleBaseCurrency, selectedAmountExchangeRated])#adding these values to the rows list
 
             # Create a DataFrame from the rows
-            df = pd.DataFrame(rows, columns=headers)
-            st.dataframe(df, width=1250)
+            df = pd.DataFrame(rows, columns=headers)#create dataframe for table
+            st.dataframe(df, width=1250)#create table
 
 
             st.write(f"The bar chart displays the exchange rate of the {baseCurrency} against the selected currencies.")
@@ -134,7 +134,7 @@ with bodyContainer:
             st.markdown("<p style='font-weight:bold'>Compare Euro Historically</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:14px'>This tab offers statistics and graphical information on the historical performance of a selected currency against the Euro.</p>", unsafe_allow_html=True)
 
-            # Get the list of currencies
+            # Get the list of all the currencies against the euro
             currencylistE=getreadfile.getAllCurrenciesComparedToEuro()
 
             # Create two columns for side-by-side selection boxes
@@ -345,7 +345,7 @@ with bodyContainer:
                                 restaurantamount=restaurantamountinput
 
                             totalamount=rentamount+grocamount+restaurantamount
-                            
+
                             with righte:
                                 if button:
                                     if totalamount==0:
